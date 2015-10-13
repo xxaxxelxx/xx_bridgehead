@@ -1,0 +1,71 @@
+#!/bin/bash
+########################################
+# xx_icecast                           #
+# xx_bridgehead                        #
+# axxel.net | @xxaxxelxx | 2015-OCT-13 #
+########################################
+
+#####################
+##### variables #####
+
+EXT_IF="eth0" # network
+SERVICES_UDP_PLAYERS="8000" 
+SERVICES_UDP_MASTERS="22 80 8000 65522"
+
+SERVICES_TCP_PLAYERS="8000" 
+SERVICES_TCP_MASTERS="22 80 161 8000 65161 65522"
+
+#PLAYERS_ADDRESSES="178.254.54.133/32 178.254.55.6/32 178.254.55.9/32 178.254.55.10/32 178.254.55.11/32 178.254.55.253/32 178.254.54.22/32 178.254.54.23/32 84.38.64.234/32 84.38.67.81/32 84.38.64.55/32 84.38.66.177/32 84.38.64.135/32 84.38.68.134/32 84.38.68.136/32 109.73.51.130/32"
+#MASTERS_ADDRESSES="141.16.140.0/29 141.16.140.16/29 141.16.141.0/28 62.225.48.240/29"
+
+. addresses.players
+. addresses.masters
+
+# applying basic rules
+. basic.rules
+
+##################################
+##### allowing some services #####
+/sbin/iptables -N services
+for port in $SERVICES_TCP_MASTERS ; do
+    for address in $MASTERS_ADDRESSES ; do
+       /sbin/iptables -A services -p tcp -s $address --dport $port -j service_sec
+       /sbin/iptables -A services -p tcp -s $address --dport $port -j ACCEPT
+    done
+done
+for port in $SERVICES_TCP_PLAYERS ; do
+    for address in $PLAYERS_ADDRESSES ; do
+       /sbin/iptables -A services -p tcp -s $address --dport $port -j service_sec
+       /sbin/iptables -A services -p tcp -s $address --dport $port -j ACCEPT
+    done
+done
+for port in $SERVICES_UDP_MASTERS ; do
+    for address in $MASTERS_ADDRESSES ; do
+       /sbin/iptables -A services -p udp -s $address --dport $port -j service_sec
+       /sbin/iptables -A services -p udp -s $address --dport $port -j ACCEPT
+    done
+done
+for port in $SERVICES_UDP_PLAYERS ; do
+    for address in $PLAYERS_ADDRESSES ; do
+       /sbin/iptables -A services -p udp -s $address --dport $port -j service_sec
+       /sbin/iptables -A services -p udp -s $address --dport $port -j ACCEPT
+    done
+done
+/sbin/iptables -A services -p ALL -j RETURN # returns control
+
+#################
+##### INPUT #####
+# external
+/sbin/iptables -A INPUT -p icmp -j ACCEPT # accepting ICMP
+/sbin/iptables -A INPUT -p ALL -i $EXT_IF -j bad_packets
+/sbin/iptables -A INPUT -p ALL -i $EXT_IF -j service_sec
+/sbin/iptables -A INPUT -p ALL -i $EXT_IF -j services
+/sbin/iptables -A INPUT -p ALL -i $EXT_IF -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# local
+/sbin/iptables -A INPUT -p ALL -i lo -j ACCEPT
+
+##################
+##### OUTPUT #####
+/sbin/iptables -A OUTPUT -p ALL -j ACCEPT
+

@@ -1,0 +1,79 @@
+#!/bin/bash
+########################################
+# xx_icecast                           #
+# xx_bridgehead                        #
+# axxel.net | @xxaxxelxx | 2015-OCT-13 #
+########################################
+
+#####################
+##### variables #####
+
+EXT_IF="eth0"
+SERVICES_UDP="80"
+SERVICES_UDP_MASTER="22 80 161 8000 65161 65522"
+
+SERVICES_TCP="80"
+SERVICES_TCP_MASTER="22 80 161 8000 65161 65522" #freigegebene TCP-Ports (hier http, https, ssh, ftp)
+
+. addresses.masters
+
+# applying basic rules
+. basic.rules
+
+iptables -N service_attack
+iptables -A service_attack -p tcp --dport 80 -m recent -i eth0 --update --seconds 60 --hitcount 10 --rttl --name ICECAST -j LOG --log-prefix "ICECAST_too_many_connections"
+iptables -A service_attack -p tcp --dport 80 -m recent -i eth0 --update --seconds 60 --hitcount 10 --rttl --name ICECAST -j DROP
+iptables -A service_attack -p tcp --dport 80 -m state --state NEW -m recent -i eth0 --set --name ICECAST -j ACCEPT
+iptables -A service_attack -p ALL -j RETURN # returns control
+
+iptables -N service_abuse
+iptables -A service_abuse -p tcp --dport 80 ! -s 127.0.0.1 -m string --algo bm --string "_master" -j LOG --log-prefix "ICECAST_no_access_to_master" 
+iptables -A service_abuse -p tcp --dport 80 ! -s 127.0.0.1 -m string --algo bm --string "_master" -j DROP 
+iptables -A service_abuse -p ALL -j RETURN # returns control
+
+
+################################
+##### freigegebene Dienste #####
+/sbin/iptables -N services
+
+for port in $SERVICES_TCP_MASTERS ; do
+    for address in $MASTERS_ADDRESSES ; do
+       /sbin/iptables -A services -p tcp -s $address --dport $port -j service_sec
+       /sbin/iptables -A services -p tcp -s $address --dport $port -j ACCEPT
+    done
+done
+for port in $SERVICES_UDP_MASTERS ; do
+    for address in $MASTERS_ADDRESSES ; do
+       /sbin/iptables -A services -p udp -s $address --dport $port -j service_sec
+       /sbin/iptables -A services -p udp -s $address --dport $port -j ACCEPT
+    done
+done
+
+/sbin/iptables -A services -j service_attack
+/sbin/iptables -A services -j service_abuse
+
+for port in $SERVICES_TCP ; do
+       /sbin/iptables -A services -p tcp --dport $port -j service_sec
+       /sbin/iptables -A services -p tcp --dport $port -j ACCEPT
+done
+
+for port in $SERVICES_UDP ; do
+       /sbin/iptables -A services -p udp --dport $port -j service_sec
+       /sbin/iptables -A services -p udp --dport $port -j ACCEPT
+done
+
+/sbin/iptables -A services -p ALL -j RETURN # returns control
+
+#################
+##### INPUT #####
+## from the wild
+/sbin/iptables -A INPUT -p icmp -j ACCEPT # accepting icmp
+/sbin/iptables -A INPUT -p ALL -i $EXT_IF -j bad_packets 
+/sbin/iptables -A INPUT -p ALL -i $EXT_IF -j services 
+/sbin/iptables -A INPUT -p ALL -i $EXT_IF -m state --state ESTABLISHED,RELATED -j ACCEPT
+ ## from locals
+/sbin/iptables -A INPUT -p ALL -i lo -j ACCEPT
+
+##################
+##### OUTPUT #####
+/sbin/iptables -A OUTPUT -p ALL -j ACCEPT

@@ -1,0 +1,31 @@
+##################################
+##### rule and chain cleanup #####
+/sbin/iptables -F # flushing all rules
+/sbin/iptables -t nat -F
+/sbin/iptables -t mangle -F
+/sbin/iptables -X # deleting my own chains
+/sbin/iptables -t nat -X
+/sbin/iptables -t mangle -X
+
+
+#######################
+##### basic rules #####
+/sbin/iptables -P OUTPUT  DROP
+/sbin/iptables -P INPUT   DROP
+/sbin/iptables -P FORWARD DROP
+
+
+###################################
+##### security measures ###########
+iptables -N bad_packets
+iptables -A bad_packets -p ALL -m state --state INVALID -j DROP # dropping damaged packets
+iptables -A bad_packets -p icmp --icmp-type echo-request -m limit --limit 1/s -j ACCEPT # PingOfDeath counter measures, makes sense if ICMP is accepted 
+iptables -A bad_packets -p ALL -j RETURN # returns control
+
+iptables -N service_sec
+iptables -A service_sec -p tcp --syn -m limit --limit 1/s -j ACCEPT    # SYN-flood 
+iptables -A service_sec -p tcp ! --syn -m state --state NEW -j LOG     # logging TCP-SYN packets without NEW flag
+iptables -A service_sec -p tcp ! --syn -m state --state NEW -j DROP    # TCP-SYN packets without NEW flag
+iptables -A service_sec -p tcp --tcp-flags ALL NONE -m limit --limit 1/h -j ACCEPT # port scanners
+iptables -A service_sec -p tcp --tcp-flags ALL ALL -m limit --limit 1/h -j ACCEPT  # port scanners
+iptables -A service_sec -p ALL -j RETURN # returns control
