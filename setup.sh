@@ -21,10 +21,10 @@ function f_basics() {
     if [ $? -ne 0 ]; then
 	echo "http://http.debian.net/debian $RELEASE-backports main" >> /etc/apt/sources.list
     fi
-    apt-get -qq -y update
-    apt-get -qq -y dist-upgrade
-    apt-get -qq -y install rsync rdate mc telnet 
-    apt-get -qq -y install docker.io
+#    apt-get -qq -y update
+#    apt-get -qq -y dist-upgrade
+#    apt-get -qq -y install rsync rdate mc telnet 
+#    apt-get -qq -y install docker.io
 }
 
 function f_proxy() {
