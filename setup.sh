@@ -28,7 +28,7 @@ function f_basics() {
     apt-get -qq -y install docker.io
     echo "root:$(date | md5sum | awk '{print $1}')" | chpasswd
 
-    if [ -n $MYHOSTNAME]; then
+    if [ -n $MYHOSTNAME ]; then
 	echo "$MYHOSTNAME" >> /etc/hostname
     fi
 }
