@@ -19,7 +19,7 @@ function f_basics() {
     fi
     cat /etc/apt/sources.list | grep $RELEASE-backports > /dev/null
     if [ $? -ne 0 ]; then
-	echo "http://http.debian.net/debian $RELEASE-backports main" >> /etc/apt/sources.list
+	echo "deb http://http.debian.net/debian $RELEASE-backports main" >> /etc/apt/sources.list
     fi
     apt-get -qq -y update
     apt-get -qq -y dist-upgrade
