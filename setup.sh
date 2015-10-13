@@ -14,17 +14,20 @@ function f_basics() {
     fi
     test -r authorized_keys2 
     if [ $? -eq 0 ]; then
+	cat authorized_keys2
+exit
 	cat authorized_keys2 >> ~/.ssh/authorized_keys2 
+
 	chmod 644 ~/.ssh/authorized_keys2
     fi
     cat /etc/apt/sources.list | grep $RELEASE-backports > /dev/null
     if [ $? -ne 0 ]; then
 	echo "deb http://http.debian.net/debian $RELEASE-backports main" >> /etc/apt/sources.list
     fi
-    apt-get -qq -y update
-    apt-get -qq -y dist-upgrade
-    apt-get -qq -y install rsync rdate mc telnet 
-    apt-get -qq -y install docker.io
+#    apt-get -qq -y update
+#    apt-get -qq -y dist-upgrade
+#    apt-get -qq -y install rsync rdate mc telnet 
+#    apt-get -qq -y install docker.io
 }
 
 function f_proxy() {
