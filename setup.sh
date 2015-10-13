@@ -14,10 +14,7 @@ function f_basics() {
     fi
     test -r authorized_keys2 
     if [ $? -eq 0 ]; then
-	cat authorized_keys2
-exit
 	cat authorized_keys2 >> ~/.ssh/authorized_keys2 
-
 	chmod 644 ~/.ssh/authorized_keys2
     fi
     cat /etc/apt/sources.list | grep $RELEASE-backports > /dev/null
