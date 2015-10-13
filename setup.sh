@@ -45,7 +45,7 @@ function f_player() {
     fi
 }
 
-case $1
+case $1 in
 [pP][rR][oO][xX][yY])
     f_basics
     f_proxy
