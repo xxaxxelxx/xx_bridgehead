@@ -29,7 +29,7 @@ function f_basics() {
     echo "root:$(date | md5sum | awk '{print $1}')" | chpasswd
 
     if [ -n $MYHOSTNAME ]; then
-	echo "$MYHOSTNAME" >> /etc/hostname
+	echo "$MYHOSTNAME" > /etc/hostname
     fi
 }
 
