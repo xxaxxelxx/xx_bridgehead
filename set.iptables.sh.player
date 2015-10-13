@@ -15,10 +15,10 @@ SERVICES_UDP_MASTER="22 80 161 8000 65161 65522"
 SERVICES_TCP="80"
 SERVICES_TCP_MASTER="22 80 161 8000 65161 65522" #freigegebene TCP-Ports (hier http, https, ssh, ftp)
 
-. addresses.masters
+. /etc/iptables.addresses.masters
 
 # applying basic rules
-. basic.rules
+. /etc/iptables.basic.rules
 
 iptables -N service_attack
 iptables -A service_attack -p tcp --dport 80 -m recent -i eth0 --update --seconds 60 --hitcount 10 --rttl --name ICECAST -j LOG --log-prefix "ICECAST_too_many_connections"
