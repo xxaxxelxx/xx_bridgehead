@@ -1,10 +1,11 @@
 #!/bin/bash
-if [ $# -lt 1 ]; then
-    echo "Usage: $(basename $0) proxy|player"
+if [ $# -lt 2 ]; then
+    echo "Usage: $(basename $0) proxy|player hostname"
     exit
 fi
 
 RELEASE="jessie"
+MYHOSTNAME=$2
 
 function f_basics() {
     test -d ~/.ssh
@@ -25,8 +26,11 @@ function f_basics() {
     apt-get -qq -y dist-upgrade
     apt-get -qq -y install rsync rdate mc telnet 
     apt-get -qq -y install docker.io
-#    date | md5sum | awk '{print $1}' | passwd -u root --stdin
-    echo "12345678" | passwd -u root --stdin
+    echo "root:$(date | md5sum | awk '{print $1}')" | chpasswd
+
+    if [ -n $MYHOSTNAME]; then
+	echo "$MYHOSTNAME" >> /etc/hostname
+    fi
 }
 
 function f_proxy() {
