@@ -1,0 +1,27 @@
+master	simulcast	bbr	141.16.141.2
+master	simulcast	tdy	141.16.141.2
+#master	simulcast	ow	141.16.141.2
+
+master	channels	bbr	62.225.48.243
+master	channels	tdy	62.225.48.243
+master	channels	ow	62.225.48.243
+
+proxy	simulcast	bbr	178.254.55.6	greatnet proxy
+proxy	simulcast	tdy	178.254.55.6	greatnet proxy
+proxy	simulcast	ow	178.254.55.6	greatnet proxy
+proxy	simulcast	bbr	84.38.64.135	ispone proxy
+proxy	simulcast	tdy	84.38.64.135	ispone proxy
+proxy	simulcast	ow	84.38.64.135	ispone proxy
+proxy	simulcast	bbr	84.38.65.151	ispone proxy
+proxy	simulcast	tdy	84.38.65.151	ispone proxy
+proxy	simulcast	ow	84.38.65.151	ispone proxy
+
+proxy	channels	bbr	178.254.55.6	greatnet proxy
+proxy	channels	tdy	178.254.55.6	greatnet proxy
+proxy	channels	ow	178.254.55.6	greatnet proxy
+proxy	channels	bbr	84.38.64.135	ispone proxy
+proxy	channels	tdy	84.38.64.135	ispone proxy
+proxy	channels	ow	84.38.64.135	ispone proxy
+proxy	channels	bbr	84.38.65.151	ispone proxy
+proxy	channels	tdy	84.38.65.151	ispone proxy
+proxy	channels	ow	84.38.65.151	ispone proxy
