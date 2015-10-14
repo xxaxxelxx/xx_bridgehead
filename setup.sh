@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ $# -lt 2 ]; then
+if [ $# -lt 1 ]; then
     echo "Usage: $(basename $0) proxy|player hostname"
     exit
 fi
