@@ -23,30 +23,36 @@ function f_basics() {
     fi
     apt-get -qq -y update
     apt-get -qq -y dist-upgrade
-    apt-get -qq -y install rsync rdate mc telnet 
+    apt-get -qq -y install rsync rdate mc telnet dialog 
     echo "root:$(date | md5sum | awk '{print $1}')" | chpasswd
 }
 
 function f_proxy() {
     test -r set.iptables.sh.proxy
     if [ $? -eq 0 ]; then
-	cp -f set.iptables.sh.proxy /etc/network/if-up.d/iptables
-	cp -f iptables.basic.rules /etc/
-	cp -f iptables.addresses.players /etc/
-	cp -f iptables.addresses.masters /etc/
-	chmod 755 /etc/network/if-up.d/iptables
-	./etc/network/if-up.d/iptables
+	test ! -r /etc/network/if-up.d/iptables
+	if [ $? -eq 0 ]; then
+	    cp -f set.iptables.sh.proxy /etc/network/if-up.d/iptables
+	    cp -f iptables.basic.rules /etc/
+	    cp -f iptables.addresses.players /etc/
+	    cp -f iptables.addresses.masters /etc/
+	    chmod 755 /etc/network/if-up.d/iptables
+	    `/etc/network/if-up.d/iptables`
+	fi
     fi
 }
 
 function f_player() {
     test -r set.iptables.sh.player
     if [ $? -eq 0 ]; then
-	cp -f set.iptables.sh.player /etc/network/if-up.d/iptables
-	cp -f iptables.basic.rules /etc/
-	cp -f iptables.addresses.masters /etc/
-	chmod 755 /etc/network/if-up.d/iptables
-	./etc/network/if-up.d/iptables
+	test ! -r /etc/network/if-up.d/iptables
+	if [ $? -eq 0 ]; then
+	    cp -f set.iptables.sh.player /etc/network/if-up.d/iptables
+	    cp -f iptables.basic.rules /etc/
+	    cp -f iptables.addresses.masters /etc/
+	    chmod 755 /etc/network/if-up.d/iptables
+	    `/etc/network/if-up.d/iptables`
+	fi
     fi
 }
 
