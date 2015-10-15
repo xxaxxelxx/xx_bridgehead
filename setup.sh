@@ -25,6 +25,7 @@ function f_basics() {
     apt-get -qq -y dist-upgrade
     apt-get -qq -y install rsync rdate mc telnet dialog 
     echo "root:$(date | md5sum | awk '{print $1}')" | chpasswd
+    test -n $2 && echo "$2" > /etc/hostname
 }
 
 function f_proxy() {
@@ -66,7 +67,7 @@ case $1 in
     f_player
 ;;
 *)
-    echo "Usage: $(basename $0) proxy|player"
+    echo "Usage: $(basename $0) proxy|player hostname"
     exit
 ;;
 esac
