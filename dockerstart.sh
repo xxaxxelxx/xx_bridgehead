@@ -80,13 +80,12 @@ if [ $MODE = "PROXY" ]; then
 	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e $CID=$CRESULT"
     fi
 
+    # ICECAST PORT
+    IC_PORT=8000
+
     # MASTER SERVER PORT
     MASTER_SERVER_PORT="$(dialog --stdout --inputbox "Master Server port please:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e MASTER_SERVER_PORT=$MASTER_SERVER_PORT"
-
-    # ICECAST PORT
-    IC_PORT="$(dialog --stdout --inputbox "Icecast port please:" $HEIGHT $WIDTH)"
-    DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e IC_PORT=$IC_PORT"
 
     # ICECAST ADMIN PASSWORD
     IC_ADMIN_PASS="$(dialog --stdout --inputbox "Icecast admin password please:" $HEIGHT $WIDTH)"
@@ -143,13 +142,12 @@ elif [ $MODE = "PLAYER" ]; then
 	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e $CID=$CRESULT"
     fi
 
+    # ICECAST PORT
+    IC_PORT=8000
+
     # PROXY SERVER PORT
     PROXY_SERVER_PORT="$(dialog --stdout --inputbox "Proxy Server port please:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e PROXY_SERVER_PORT=$PROXY_SERVER_PORT"
-
-    # ICECAST PORT
-    IC_PORT="$(dialog --stdout --inputbox "Icecast port please:" $HEIGHT $WIDTH)"
-    DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e IC_PORT=$IC_PORT"
 
     # ICECAST ADMIN PASSWORD
     IC_ADMIN_PASS="$(dialog --stdout --inputbox "Icecast admin password please:" $HEIGHT $WIDTH)"
@@ -161,7 +159,7 @@ elif [ $MODE = "PLAYER" ]; then
 
     dialog --yesno "docker run -d --name icecast_player -p 80:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player"  $HEIGHT $WIDTH
     if [ $? -eq 0 ]; then
-	docker run -d --name icecast_player -p $IC_PORT:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player
+	docker run -d --name icecast_player -p 80:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player
     else
 	echo "Do it again."
 	exit 1
