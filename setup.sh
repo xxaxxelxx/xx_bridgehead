@@ -1,6 +1,6 @@
 #!/bin/bash
-if [ $# -lt 3 ]; then
-    echo "Usage: $(basename $0) proxy|player release hostname"
+if [ $# -lt 2 ]; then
+    echo "Usage: $(basename $0) proxy|player hostname"
     exit
 fi
 
