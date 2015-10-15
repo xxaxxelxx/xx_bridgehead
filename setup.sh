@@ -1,11 +1,10 @@
 #!/bin/bash
-if [ $# -lt 1 ]; then
-    echo "Usage: $(basename $0) proxy|player hostname"
+if [ $# -lt 3 ]; then
+    echo "Usage: $(basename $0) proxy|player release hostname"
     exit
 fi
 
 RELEASE="jessie"
-MYHOSTNAME=$2
 
 function f_basics() {
     test -d ~/.ssh
@@ -26,10 +25,6 @@ function f_basics() {
     apt-get -qq -y dist-upgrade
     apt-get -qq -y install rsync rdate mc telnet 
     echo "root:$(date | md5sum | awk '{print $1}')" | chpasswd
-
-    if [ -n $MYHOSTNAME ]; then
-	echo "$MYHOSTNAME" > /etc/hostname
-    fi
 }
 
 function f_proxy() {
@@ -40,7 +35,7 @@ function f_proxy() {
 	cp -f iptables.addresses.players /etc/
 	cp -f iptables.addresses.masters /etc/
 	chmod 755 /etc/network/if-up.d/iptables
-	exec /etc/network/if-up.d/iptables
+	./etc/network/if-up.d/iptables
     fi
 }
 
@@ -49,10 +44,9 @@ function f_player() {
     if [ $? -eq 0 ]; then
 	cp -f set.iptables.sh.player /etc/network/if-up.d/iptables
 	cp -f iptables.basic.rules /etc/
-	cp -f iptables.addresses.players /etc/
 	cp -f iptables.addresses.masters /etc/
 	chmod 755 /etc/network/if-up.d/iptables
-	exec /etc/network/if-up.d/iptables
+	./etc/network/if-up.d/iptables
     fi
 }
 
@@ -72,7 +66,5 @@ case $1 in
 esac
 
 apt-get -qq -y install docker.io
-
-
 
 exit
