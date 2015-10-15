@@ -36,21 +36,24 @@ function f_basics() {
 function f_proxy() {
     test -r set.iptables.sh.proxy
     if [ $? -eq 0 ]; then
-	cp -f set.iptables.sh.proxy /etc/network/if-up.d/iptables
+#	cp -f set.iptables.sh.proxy /etc/network/if-up.d/iptables
 	cp -f iptables.basic.rules /etc/
 	cp -f iptables.addresses.players /etc/
 	cp -f iptables.addresses.masters /etc/
-	chmod 755 /etc/network/if-up.d/iptables
-	exec /etc/network/if-up.d/iptables
+#	chmod 755 /etc/network/if-up.d/iptables
+#	exec /etc/network/if-up.d/iptables
     fi
 }
 
 function f_player() {
     test -r set.iptables.sh.player
     if [ $? -eq 0 ]; then
-	cp -f set.iptables.sh.player /etc/network/if-up.d/iptables
-	chmod 755 /etc/network/if-up.d/iptables
-	exec /etc/network/if-up.d/iptables
+#	cp -f set.iptables.sh.player /etc/network/if-up.d/iptables
+	cp -f iptables.basic.rules /etc/
+	cp -f iptables.addresses.players /etc/
+	cp -f iptables.addresses.masters /etc/
+#	chmod 755 /etc/network/if-up.d/iptables
+#	exec /etc/network/if-up.d/iptables
     fi
 }
 
