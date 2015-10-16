@@ -10,10 +10,10 @@
 
 EXT_IF="eth0"
 SERVICES_UDP="80"
-SERVICES_UDP_MASTER="22 80 161 8000 65161 65522"
+SERVICES_UDP_MASTERS="22 80 161 8000 65161 65522"
 
 SERVICES_TCP="80"
-SERVICES_TCP_MASTER="22 80 161 8000 65161 65522" #freigegebene TCP-Ports (hier http, https, ssh, ftp)
+SERVICES_TCP_MASTERS="22 80 161 8000 65161 65522" #freigegebene TCP-Ports (hier http, https, ssh, ftp)
 
 . /etc/iptables.addresses.masters
 
