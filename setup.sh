@@ -65,11 +65,11 @@ function f_player() {
 
 case $1 in
 [pP][rR][oO][xX][yY])
-    f_basics
+    f_basics $1 $2
     f_proxy
 ;;
 [pP][lL][aA][yY][eE][rR])
-    f_basics
+    f_basics $1 $2
     f_player
 ;;
 *)
