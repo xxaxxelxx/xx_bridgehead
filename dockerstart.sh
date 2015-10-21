@@ -14,7 +14,7 @@ player)
 esac
 
 function set_ip() {
-    OIFS="$IFS"; IFS=$'\n'; A_IPLIST=($(cat icecast.machines.list | grep -v -e '^#' | grep -iw $2 | grep -iw $3 | grep -iw $4 | awk '{print $4}')); IFS="$OIFS"
+    OIFS="$IFS"; IFS=$'\n'; A_IPLIST=($(cat icecast.machines.list | grep -v -e '^#' | grep -v -e '^$' | grep -iw $2 | grep -iw $3 | grep -iw $4 | awk '{print $4}')); IFS="$OIFS"
     if [ ${#A_IPLIST[@]} -eq 0 ]; then
 	return 1
     elif [ ${#A_IPLIST[@]} -eq 1 ]; then
@@ -22,63 +22,28 @@ function set_ip() {
     else
 	DIALOG_LIST=""
 	for CIP in "${A_IPLIST[@]}"; do
-	    DIALOG_LIST="$DIALOG_LIST $CIP $CID x"
+	    DIALOG_LIST="$DIALOG_LIST $CIP $(cat icecast.machines.list | grep $CIP | awk '{print $5}' | sort -u) x"
 	done
 	echo "$(dialog --clear --stdout --radiolist "$CID" $HEIGHT $WIDTH $LHEIGHT $DIALOG_LIST)"
 	return 0
     fi
 }
 
+function selector() {
+	cat icecast.machines.list | awk '{print $1OFS$2OFS$3}' | sort -u | grep -wi "$1" | grep -v grep | grep -ve '^#' | grep -ve '^$' | tr [:lower:] [:upper:]
+}
+
 if [ $MODE = "PROXY" ]; then
-    DOCKER_ENV_STRING=""
-
-    # SIMULCAST_MASTER_SERVER_BBR
-    CID="SIMULCAST_MASTER_SERVER_BBR"
-    TYPE_A="simulcast";TYPE_B="master"; TYPE_C="bbr";
-    CRESULT="$(set_ip $CID $TYPE_A $TYPE_B $TYPE_C)"
-    if [ $? -eq 0 ]; then
-	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e $CID=$CRESULT"
-    fi
-
-    # SIMULCAST_MASTER_SERVER_TDY
-    CID="SIMULCAST_MASTER_SERVER_TDY"
-    TYPE_A="simulcast";TYPE_B="master"; TYPE_C="tdy";
-    CRESULT="$(set_ip $CID $TYPE_A $TYPE_B $TYPE_C)"
-    if [ $? -eq 0 ]; then
-	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e $CID=$CRESULT"
-    fi
-
-    # SIMULCAST_MASTER_SERVER_OW
-    CID="SIMULCAST_MASTER_SERVER_OW"
-    TYPE_A="simulcast";TYPE_B="master"; TYPE_C="ow";
-    CRESULT="$(set_ip $CID $TYPE_A $TYPE_B $TYPE_C)"
-    if [ $? -eq 0 ]; then
-	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e $CID=$CRESULT"
-    fi
-
-    # CHANNEL_MASTER_SERVER_BBR
-    CID="CHANNEL_MASTER_SERVER_BBR"
-    TYPE_A="channels";TYPE_B="master"; TYPE_C="bbr";
-    CRESULT="$(set_ip $CID $TYPE_A $TYPE_B $TYPE_C)"
-    if [ $? -eq 0 ]; then
-	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e $CID=$CRESULT"
-    fi
-
-    # CHANNEL_MASTER_SERVER_TDY
-    CID="CHANNEL_MASTER_SERVER_TDY"
-    TYPE_A="channels";TYPE_B="master"; TYPE_C="tdy";
-    CRESULT="$(set_ip $CID $TYPE_A $TYPE_B $TYPE_C)"
-    if [ $? -eq 0 ]; then
-	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e $CID=$CRESULT"
-    fi
-
-    # CHANNEL_MASTER_SERVER_OW
-    CID="CHANNEL_MASTER_SERVER_OW"
-    TYPE_A="channels";TYPE_B="master"; TYPE_C="ow";
-    CRESULT="$(set_ip $CID $TYPE_A $TYPE_B $TYPE_C)"
-    if [ $? -eq 0 ]; then
-	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e $CID=$CRESULT"
-    fi
+    DOCKER_ENV_STRING=$(selector master | {
+		while read LINE; do
+	    L_ARRAY=($LINE)
+	    CID="${L_ARRAY[1]}_${L_ARRAY[0]}_SERVER_${L_ARRAY[2]}"
+    	    TYPE_A="${L_ARRAY[1]}";TYPE_B="${L_ARRAY[0]}"; TYPE_C="${L_ARRAY[2]}";
+	    CRESULT="$(set_ip $CID $TYPE_A $TYPE_B $TYPE_C)"
+	    DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e $CID=$CRESULT"
+	done
+	echo "$DOCKER_ENV_STRING"
+    })
 
     # ICECAST PORT
     IC_PORT=8000
@@ -100,47 +65,24 @@ if [ $MODE = "PROXY" ]; then
     fi
 
 elif [ $MODE = "PLAYER" ]; then
-    DOCKER_ENV_STRING=""
-
-    # SIMULCAST_PROXY_SERVER_BBR
-    CID="SIMULCAST_PROXY_SERVER_BBR"
-    TYPE_A="simulcast";TYPE_B="proxy"; TYPE_C="bbr";
-    CRESULT="$(set_ip $CID $TYPE_A $TYPE_B $TYPE_C)"
-    if [ $? -eq 0 ]; then
-	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e $CID=$CRESULT"
-    fi
-
-    # SIMULCAST_PROXY_SERVER_TDY
-    CID="SIMULCAST_PROXY_SERVER_TDY"
-    TYPE_A="simulcast";TYPE_B="proxy"; TYPE_C="tdy";
-    CRESULT="$(set_ip $CID $TYPE_A $TYPE_B $TYPE_C)"
-    if [ $? -eq 0 ]; then
-	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e $CID=$CRESULT"
-    fi
-
-    # CHANNEL_PROXY_SERVER_BBR
-    CID="CHANNEL_PROXY_SERVER_BBR"
-    TYPE_A="channels";TYPE_B="proxy"; TYPE_C="bbr";
-    CRESULT="$(set_ip $CID $TYPE_A $TYPE_B $TYPE_C)"
-    if [ $? -eq 0 ]; then
-	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e $CID=$CRESULT"
-    fi
-
-    # CHANNEL_PROXY_SERVER_TDY
-    CID="CHANNEL_PROXY_SERVER_TDY"
-    TYPE_A="channels";TYPE_B="proxy"; TYPE_C="tdy";
-    CRESULT="$(set_ip $CID $TYPE_A $TYPE_B $TYPE_C)"
-    if [ $? -eq 0 ]; then
-	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e $CID=$CRESULT"
-    fi
-
-    # CHANNEL_PROXY_SERVER_OW
-    CID="CHANNEL_PROXY_SERVER_OW"
-    TYPE_A="channels";TYPE_B="proxy"; TYPE_C="ow";
-    CRESULT="$(set_ip $CID $TYPE_A $TYPE_B $TYPE_C)"
-    if [ $? -eq 0 ]; then
-	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e $CID=$CRESULT"
-    fi
+    
+    OIFS="$IFS"; IFS=$'\n'; A_LIST=($(cat icecast.machines.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $3$2}' | sort -u )); IFS="$OIFS"
+    DIALOG_LIST=""
+    for CITEM in "${A_LIST[@]}"; do
+	DIALOG_LIST="$DIALOG_LIST $CITEM :) x"
+    done
+    PRESEL="$(dialog --clear --stdout --checklist "WANNA PLAY?" $HEIGHT $WIDTH $LHEIGHT $DIALOG_LIST | tr [:lower:] [:upper:])"
+    DOCKER_ENV_STRING=$(selector proxy | {
+	while read LINE; do
+	    L_ARRAY=($LINE)
+	    CID="${L_ARRAY[1]}_${L_ARRAY[0]}_SERVER_${L_ARRAY[2]}"
+	    echo $PRESEL | grep ${L_ARRAY[2]}${L_ARRAY[1]} > /dev/null || continue
+    	    TYPE_A="${L_ARRAY[1]}";TYPE_B="${L_ARRAY[0]}"; TYPE_C="${L_ARRAY[2]}";
+	    CRESULT="$(set_ip $CID $TYPE_A $TYPE_B $TYPE_C)"
+	    DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e $CID=$CRESULT"
+	done
+	echo "$DOCKER_ENV_STRING"
+    })
 
     # ICECAST PORT
     IC_PORT=8000
@@ -159,11 +101,50 @@ elif [ $MODE = "PLAYER" ]; then
 
     dialog --yesno "docker run -d --name icecast_player -p 80:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player"  $HEIGHT $WIDTH
     if [ $? -eq 0 ]; then
-	docker run -d --name icecast_player -p 80:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player
+echo "ic player dockered"
+#	docker run -d --name icecast_player -p 80:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player
     else
 	echo "Do it again."
 	exit 1
     fi
+    
+    for LIQS in $PRESEL; do
+#    echo "x $LIQS"
+	case $LIQS in
+	    BBRSIMULCAST)
+	    TRIGGER="bbradio"
+	    echo "$TRIGGER liq dockered"
+	    #	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+	    ;;
+	    BBRCHANNELS)
+	    TRIGGER="bbradio-ch"
+	    echo "$TRIGGER liq dockered"
+	    #	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+	    ;;
+	    TDYSIMULCAST)
+	    TRIGGER="radioteddy"
+	    echo "$TRIGGER liq dockered"
+	    #	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+	    ;;
+	    TDYCHANNELS)
+	    TRIGGER="radioteddy-ch"
+	    echo "$TRIGGER liq dockered"
+	    #	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+	    ;;
+	    OWSIMULCAST)
+	    TRIGGER="ostseewelle"
+	    echo "$TRIGGER liq dockered"
+	    #	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+	    ;;
+	    OWCHANNELS)
+	    TRIGGER="ostseewelle-ch"
+	    echo "$TRIGGER liq dockered"
+	    #	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+	    ;;
+	esac
+    done
+
+
 fi
 
 exit
