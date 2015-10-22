@@ -47,6 +47,7 @@ if [ $MODE = "PROXY" ]; then
 
     # ICECAST PORT
     IC_PORT=8000
+    DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e IC_PORT=$IC_PORT"
 
     # MASTER SERVER PORT
     MASTER_SERVER_PORT="$(dialog --stdout --inputbox "Master Server port please:" $HEIGHT $WIDTH)"
@@ -86,6 +87,7 @@ elif [ $MODE = "PLAYER" ]; then
 
     # ICECAST PORT
     IC_PORT=8000
+    DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e IC_PORT=$IC_PORT"
 
     # PROXY SERVER PORT
     PROXY_SERVER_PORT="$(dialog --stdout --inputbox "Proxy Server port please:" $HEIGHT $WIDTH)"
