@@ -60,7 +60,7 @@ if [ $MODE = "PROXY" ]; then
     if [ $? -eq 0 ]; then
 	docker run -d --name icecast_proxy -p $IC_PORT:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast proxy	
     else
-	echo "Do it again."
+	echo	 "Do it again."
 	exit 1
     fi
 
@@ -101,8 +101,8 @@ elif [ $MODE = "PLAYER" ]; then
 
     dialog --yesno "docker run -d --name icecast_player -p 80:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player"  $HEIGHT $WIDTH
     if [ $? -eq 0 ]; then
-echo "ic player dockered"
-#	docker run -d --name icecast_player -p 80:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player
+#	echo "ic player dockered"
+	docker run -d --name icecast_player -p 80:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player
     else
 	echo "Do it again."
 	exit 1
@@ -113,33 +113,33 @@ echo "ic player dockered"
 	case $LIQS in
 	    BBRSIMULCAST)
 	    TRIGGER="bbradio"
-	    echo "$TRIGGER liq dockered"
-	    #	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+#	    echo "$TRIGGER liq dockered"
+	    	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
 	    ;;
 	    BBRCHANNELS)
 	    TRIGGER="bbradio-ch"
-	    echo "$TRIGGER liq dockered"
-	    #	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+#	    echo "$TRIGGER liq dockered"
+	    	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
 	    ;;
 	    TDYSIMULCAST)
 	    TRIGGER="radioteddy"
-	    echo "$TRIGGER liq dockered"
-	    #	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+#	    echo "$TRIGGER liq dockered"
+	    	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
 	    ;;
 	    TDYCHANNELS)
 	    TRIGGER="radioteddy-ch"
-	    echo "$TRIGGER liq dockered"
-	    #	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+#	    echo "$TRIGGER liq dockered"
+	    	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
 	    ;;
 	    OWSIMULCAST)
 	    TRIGGER="ostseewelle"
-	    echo "$TRIGGER liq dockered"
-	    #	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+#	    echo "$TRIGGER liq dockered"
+	    	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
 	    ;;
 	    OWCHANNELS)
 	    TRIGGER="ostseewelle-ch"
-	    echo "$TRIGGER liq dockered"
-	    #	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+#	    echo "$TRIGGER liq dockered"
+	    	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
 	    ;;
 	esac
     done
