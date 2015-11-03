@@ -72,7 +72,6 @@ elif [ $MODE = "LOADBALANCER" ]; then
     UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Icecast admin password please:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING="-e UPDATEPASSWORD=$UPDATE_ADMIN_PASS"
     docker run -d --name loadbalancer -p 80:80 $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_loadbalancer
-
 elif [ $MODE = "PLAYER" ]; then
     
     OIFS="$IFS"; IFS=$'\n'; A_LIST=($(cat icecast.machines.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $3$2}' | sort -u )); IFS="$OIFS"
@@ -153,7 +152,7 @@ elif [ $MODE = "PLAYER" ]; then
 	    ;;
 	esac
     done
-
+    docker run -d --name pulse -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro -e ADMIN_PASS=zuppizuppi -e LOOP_SEC=3 -e LOADBALANCER_ADDR=78.46.202.79 -e BW_LIMIT=0 xxaxxelxx/xx_pulse
 fi
 
 exit
