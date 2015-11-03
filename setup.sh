@@ -63,6 +63,23 @@ function f_player() {
     fi
 }
 
+function f_loadbalancer() {
+    test -r set.iptables.sh.loadbalancer
+    if [ $? -eq 0 ]; then
+	cp -f iptables.basic.rules /etc/
+	cp -f iptables.addresses.masters /etc/
+	test ! -r /etc/network/if-up.d/iptables
+	if [ $? -eq 0 ]; then
+	    cp -f set.iptables.sh.loadbalancer /etc/network/if-up.d/iptables
+	    chmod 755 /etc/network/if-up.d/iptables
+	    `/etc/network/if-up.d/iptables`
+	else
+	    cp -f set.iptables.sh.loadbalancer /etc/network/if-up.d/iptables
+	    chmod 755 /etc/network/if-up.d/iptables
+	fi
+    fi
+}
+
 case $1 in
 [pP][rR][oO][xX][yY])
     f_basics $1 $2
@@ -73,7 +90,7 @@ case $1 in
     f_player
 ;;
 *)
-    echo "Usage: $(basename $0) proxy|player hostname"
+    echo "Usage: $(basename $0) proxy|player|loadbalancer hostname"
     exit
 ;;
 esac
