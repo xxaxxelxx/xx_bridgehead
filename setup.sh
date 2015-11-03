@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ $# -lt 2 ]; then
-    echo "Usage: $(basename $0) proxy|player hostname"
+    echo "Usage: $(basename $0) proxy|player|loadbalancer hostname"
     exit
 fi
 
