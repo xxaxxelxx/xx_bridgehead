@@ -2,7 +2,7 @@
 test -r icecast.machines.list
 
 WIDTH=60; HEIGHT=30; LHEIGHT=25
-RES=$(dialog --clear --stdout --radiolist "Select your mode" $WIDTH $HEIGHT $LHEIGHT proxy mode aa player mode bb)
+RES=$(dialog --clear --stdout --radiolist "Select your mode" $WIDTH $HEIGHT $LHEIGHT proxy mode aa player mode bb loadbalancer mode cc)
 MODE="UNDEF"
 case $RES in
 proxy)
@@ -10,6 +10,9 @@ proxy)
 ;;
 player)
     MODE="PLAYER"
+;;
+loadbalancer)
+    MODE="LOADBALANCER"
 ;;
 esac
 
@@ -64,6 +67,11 @@ if [ $MODE = "PROXY" ]; then
 	echo	 "Do it again."
 	exit 1
     fi
+elif [ $MODE = "LOADBALANCER" ]; then
+    # UPDATE ADMIN PASSWORD
+    UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Icecast admin password please:" $HEIGHT $WIDTH)"
+    DOCKER_ENV_STRING="-e UPDATEPASSWORD=$UPDATE_ADMIN_PASS"
+    docker run -d --name loadbalancer -p 80:80 $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_loadbalancer
 
 elif [ $MODE = "PLAYER" ]; then
     
@@ -145,7 +153,6 @@ elif [ $MODE = "PLAYER" ]; then
 	    ;;
 	esac
     done
-
 
 fi
 
