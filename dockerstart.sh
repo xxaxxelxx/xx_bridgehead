@@ -159,7 +159,7 @@ elif [ $MODE = "PLAYER" ]; then
     BW_LIMIT="$(dialog --stdout --inputbox "Bandwidth limit in kbitps please:" $HEIGHT $WIDTH 0)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e BW_LIMIT=$BW_LIMIT"
 
-    docker run -d --name pulse -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro -e ADMIN_PASS=zuppizuppi -e LOOP_SEC=5 -e LOADBALANCER_ADDR=78.46.202.79 -e BW_LIMIT=0 xxaxxelxx/xx_pulse
+    docker run -d --name pulse -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro $DOCKER_ENV_STRING -e MOUNTPOINT_LIST=zuppi.zx xxaxxelxx/xx_pulse
 fi
 
 exit
