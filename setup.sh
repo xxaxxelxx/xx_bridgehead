@@ -89,6 +89,10 @@ case $1 in
     f_basics $1 $2
     f_player
 ;;
+[lL][oO][aA][dD][bB][aA][lL][aA][nN][cC][eE][rR])
+    f_basics $1 $2
+    f_loadbalancer
+;;
 *)
     echo "Usage: $(basename $0) proxy|player|loadbalancer hostname"
     exit
