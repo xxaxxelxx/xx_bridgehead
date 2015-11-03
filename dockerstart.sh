@@ -69,7 +69,7 @@ if [ $MODE = "PROXY" ]; then
     fi
 elif [ $MODE = "LOADBALANCER" ]; then
     # UPDATE ADMIN PASSWORD
-    UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Icecast admin password please:" $HEIGHT $WIDTH)"
+    UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update admin password please:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING="-e UPDATEPASSWORD=$UPDATE_ADMIN_PASS"
     docker run -d --name loadbalancer -p 80:80 $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_loadbalancer
 elif [ $MODE = "PLAYER" ]; then
@@ -152,7 +152,14 @@ elif [ $MODE = "PLAYER" ]; then
 	    ;;
 	esac
     done
-    docker run -d --name pulse -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro -e ADMIN_PASS=zuppizuppi -e LOOP_SEC=3 -e LOADBALANCER_ADDR=78.46.202.79 -e BW_LIMIT=0 xxaxxelxx/xx_pulse
+    UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update admin password please:" $HEIGHT $WIDTH)"
+    DOCKER_ENV_STRING="-e ADMIN_PASS=$UPDATE_ADMIN_PASS"
+    LOADBALANCER_ADDR="$(dialog --stdout --inputbox "Loadbalancer address please:" $HEIGHT $WIDTH streams.ir-media-ad.com)"
+    DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e LOADBALANCER_ADDR=$LOADBALANCER_ADDR"
+    BW_LIMIT="$(dialog --stdout --inputbox "Bandwidth limit in kbitps please:" $HEIGHT $WIDTH 0)"
+    DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e BW_LIMIT=$BW_LIMIT"
+
+    docker run -d --name pulse -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro -e ADMIN_PASS=zuppizuppi -e LOOP_SEC=5 -e LOADBALANCER_ADDR=78.46.202.79 -e BW_LIMIT=0 xxaxxelxx/xx_pulse
 fi
 
 exit
