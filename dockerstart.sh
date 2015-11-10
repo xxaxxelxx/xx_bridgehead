@@ -152,14 +152,15 @@ elif [ $MODE = "PLAYER" ]; then
 	    ;;
 	esac
     done
-    UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update admin password please:" $HEIGHT $WIDTH)"
-    DOCKER_ENV_STRING="-e ADMIN_PASS=$UPDATE_ADMIN_PASS"
-    LOADBALANCER_ADDR="$(dialog --stdout --inputbox "Loadbalancer address please:" $HEIGHT $WIDTH streams.ir-media-ad.com)"
+    UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update admin password please:" $HEIGHT $WIDTH zuppizuppi)"
+    DOCKER_ENV_STRING="-e UPDATE_ADMIN_PASS=$UPDATE_ADMIN_PASS"
+#    LOADBALANCER_ADDR="$(dialog --stdout --inputbox "Loadbalancer address please:" $HEIGHT $WIDTH streams.ir-media-ad.com)"
+    LOADBALANCER_ADDR="$(dialog --stdout --inputbox "Loadbalancer address please:" $HEIGHT $WIDTH 78.46.202.79)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e LOADBALANCER_ADDR=$LOADBALANCER_ADDR"
     BW_LIMIT="$(dialog --stdout --inputbox "Bandwidth limit in kbitps please:" $HEIGHT $WIDTH 0)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e BW_LIMIT=$BW_LIMIT"
 
-    docker run -d --name pulse -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro $DOCKER_ENV_STRING -e MOUNTPOINT_LIST=zuppi.zx xxaxxelxx/xx_pulse
+    docker run -d --name pulse -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro $DOCKER_ENV_STRING -e LOOP_SEC=5 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_pulse
 fi
 
 exit
