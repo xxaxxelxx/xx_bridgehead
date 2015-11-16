@@ -69,7 +69,7 @@ if [ $MODE = "PROXY" ]; then
     fi
 elif [ $MODE = "LOADBALANCER" ]; then
     # UPDATE ADMIN PASSWORD
-    UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update admin password please:" $HEIGHT $WIDTH)"
+    UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update password please:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING="-e UPDATEPASSWORD=$UPDATE_ADMIN_PASS"
     docker run -d --name loadbalancer -p 80:80 $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_loadbalancer
 elif [ $MODE = "PLAYER" ]; then
