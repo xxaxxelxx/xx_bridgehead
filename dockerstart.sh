@@ -155,6 +155,9 @@ elif [ $MODE = "PLAYER" ]; then
     done
     LOADBALANCER_ADDR="$(dialog --stdout --inputbox "Loadbalancer address please:" $HEIGHT $WIDTH 78.46.202.79)"
     DOCKER_ENV_STRING="-e LOADBALANCER_ADDR=$LOADBALANCER_ADDR"
+
+    docker run -d --name icecastwebdirectoryslave --volumes-from icecast_player $DOCKER_ENV_STRING -e LOOP_SEC=60 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_icecastwebdirectory_slave
+
     UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update admin password please:" $HEIGHT $WIDTH zuppizuppi)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e UPDATE_ADMIN_PASS=$UPDATE_ADMIN_PASS"
     BW_LIMIT="$(dialog --stdout --inputbox "Bandwidth limit in kbitps please:" $HEIGHT $WIDTH 0)"
@@ -162,7 +165,6 @@ elif [ $MODE = "PLAYER" ]; then
 
     docker run -d --name pulse -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro $DOCKER_ENV_STRING -e LOOP_SEC=5 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_pulse
 
-#    docker run -d --name icecastwebdirectoryslave --volumes-from icecast_player $DOCKER_ENV_STRING -e LOOP_SEC=60 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_icecastwebdirectory_slave
 fi
 
 exit
