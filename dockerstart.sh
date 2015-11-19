@@ -72,7 +72,7 @@ elif [ $MODE = "LOADBALANCER" ]; then
     UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update password please:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING="-e UPDATEPASSWORD=$UPDATE_ADMIN_PASS"
     docker run -d --name loadbalancer -p 80:80 $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_loadbalancer
-    docker run -d --name icecastwebdirectorymaster -p 65522:22 --restart=always xxaxxelxx/xx_icecastwebdirectory_master
+    docker run -d --name sshdepot -p 65522:22 --restart=always xxaxxelxx/xx_sshdepot
 elif [ $MODE = "PLAYER" ]; then
     
     OIFS="$IFS"; IFS=$'\n'; A_LIST=($(cat icecast.machines.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $3$2}' | sort -u )); IFS="$OIFS"
@@ -156,7 +156,11 @@ elif [ $MODE = "PLAYER" ]; then
     LOADBALANCER_ADDR="$(dialog --stdout --inputbox "Loadbalancer address please:" $HEIGHT $WIDTH 78.46.202.79)"
     DOCKER_ENV_STRING="-e LOADBALANCER_ADDR=$LOADBALANCER_ADDR"
 
-    docker run -d --name icecastwebdirectoryslave --volumes-from icecast_player $DOCKER_ENV_STRING -e LOOP_SEC=60 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_icecastwebdirectory_slave
+    KEY_DECRYPT_PASS="$(dialog --stdout --inputbox "Key decrypt password:" $HEIGHT $WIDTH)"
+    DOCKER_ENV_STRING_DECRYPT="-e KEY_DECRYPT_PASS=$KEY_DECRYPT_PASS"
+
+    docker run -d --name sshsatellite -v /tmp:/tmp --volumes-from icecast_player $DOCKER_ENV_STRING $DOCKER_ENV_STRING_DECRYPT -e LOOP_SEC=10 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_sshsatellite
+    
 
     UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update admin password please:" $HEIGHT $WIDTH zuppizuppi)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e UPDATE_ADMIN_PASS=$UPDATE_ADMIN_PASS"
@@ -166,6 +170,8 @@ elif [ $MODE = "PLAYER" ]; then
     docker run -d --name pulse -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro $DOCKER_ENV_STRING -e LOOP_SEC=5 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_pulse
 
 fi
+
+./icecast_trigger.sh &
 
 exit
 
