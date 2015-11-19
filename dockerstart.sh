@@ -112,7 +112,7 @@ elif [ $MODE = "PLAYER" ]; then
     dialog --yesno "docker run -d --name icecast_player -p 80:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player"  $HEIGHT $WIDTH
     if [ $? -eq 0 ]; then
 #	echo "ic player dockered"
-	docker run -d --name icecast_player -p 80:$IC_PORT $DOCKER_ENV_STRING -v /usr/share/icecast2/web --restart=always xxaxxelxx/xx_icecast player
+	docker run -d --name icecast_player -p 80:$IC_PORT $DOCKER_ENV_STRING -v /usr/share/icecast2/web -v /var/log/icecast2/ --restart=always xxaxxelxx/xx_icecast player
     else
 	echo "Do it again."
 	exit 1
