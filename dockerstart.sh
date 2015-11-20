@@ -127,8 +127,6 @@ elif [ $MODE = "PLAYER" ]; then
 	    ;;
 	    BBRCHANNELS)
 	    TRIGGER="bbradio-ch"
-#	    LIQAVAILLIST=$(docker run --rm xxaxxelxx/xxliquidsoap | grep $TRIGGER)
-##
 	    OIFS="$IFS"; IFS=$'\n'; LIQA_LIST=($(docker run --rm xxaxxelxx/xx_liquidsoap | grep $TRIGGER)); IFS="$OIFS"
 	    DIALOG_LIST=""
 	    for CITEM in "${LIQA_LIST[@]}"; do
@@ -136,7 +134,6 @@ elif [ $MODE = "PLAYER" ]; then
 	    done
 	    PRESEL="$(dialog --clear --stdout --checklist "Select: " $HEIGHT $WIDTH $LHEIGHT $DIALOG_LIST )"
 	    for LIQITEM in $PRESEL; do
-#	    	echo "$LIQITEM liq dockered"
 	    	docker run -d --name liquidsoap_$LIQITEM --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $LIQITEM
 	    done
 	    ;;
@@ -147,9 +144,15 @@ elif [ $MODE = "PLAYER" ]; then
 	    ;;
 	    TDYCHANNELS)
 	    TRIGGER="radioteddy-ch"
-	    LIQAVAILLIST=$(docker run --rm xxaxxelxx/xxliquidsoap | grep $TRIGGER)
-#	    echo "$TRIGGER liq dockered"
-	    	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+	    OIFS="$IFS"; IFS=$'\n'; LIQA_LIST=($(docker run --rm xxaxxelxx/xx_liquidsoap | grep $TRIGGER)); IFS="$OIFS"
+	    DIALOG_LIST=""
+	    for CITEM in "${LIQA_LIST[@]}"; do
+		DIALOG_LIST="$DIALOG_LIST $CITEM :) x"
+	    done
+	    PRESEL="$(dialog --clear --stdout --checklist "Select: " $HEIGHT $WIDTH $LHEIGHT $DIALOG_LIST )"
+	    for LIQITEM in $PRESEL; do
+	    	docker run -d --name liquidsoap_$LIQITEM --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $LIQITEM
+	    done
 	    ;;
 	    OWSIMULCAST)
 	    TRIGGER="ostseewelle"
@@ -158,9 +161,15 @@ elif [ $MODE = "PLAYER" ]; then
 	    ;;
 	    OWCHANNELS)
 	    TRIGGER="ostseewelle-ch"
-	    LIQAVAILLIST=$(docker run --rm xxaxxelxx/xxliquidsoap | grep $TRIGGER)
-#	    echo "$TRIGGER liq dockered"
-	    	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+	    OIFS="$IFS"; IFS=$'\n'; LIQA_LIST=($(docker run --rm xxaxxelxx/xx_liquidsoap | grep $TRIGGER)); IFS="$OIFS"
+	    DIALOG_LIST=""
+	    for CITEM in "${LIQA_LIST[@]}"; do
+		DIALOG_LIST="$DIALOG_LIST $CITEM :) x"
+	    done
+	    PRESEL="$(dialog --clear --stdout --checklist "Select: " $HEIGHT $WIDTH $LHEIGHT $DIALOG_LIST )"
+	    for LIQITEM in $PRESEL; do
+	    	docker run -d --name liquidsoap_$LIQITEM --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $LIQITEM
+	    done
 	    ;;
 	esac
     done
