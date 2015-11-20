@@ -74,7 +74,7 @@ elif [ $MODE = "LOADBALANCER" ]; then
     docker run -d --name loadbalancer -p 80:80 $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_loadbalancer
     docker run -d --name sshdepot -p 65522:22 --restart=always xxaxxelxx/xx_sshdepot
 elif [ $MODE = "PLAYER" ]; then
-    
+#    OIFS="$IFS"; IFS=$'\n'; A_LIST=($(cat icecast.machines.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $3$2}' | sort -u )); IFS="$OIFS"    
     OIFS="$IFS"; IFS=$'\n'; A_LIST=($(cat icecast.machines.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $3$2}' | sort -u )); IFS="$OIFS"
     DIALOG_LIST=""
     for CITEM in "${A_LIST[@]}"; do
@@ -117,7 +117,6 @@ elif [ $MODE = "PLAYER" ]; then
 	echo "Do it again."
 	exit 1
     fi
-    
     for LIQS in $PRESEL; do
 #    echo "x $LIQS"
 	case $LIQS in
@@ -128,8 +127,18 @@ elif [ $MODE = "PLAYER" ]; then
 	    ;;
 	    BBRCHANNELS)
 	    TRIGGER="bbradio-ch"
-#	    echo "$TRIGGER liq dockered"
-	    	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+#	    LIQAVAILLIST=$(docker run --rm xxaxxelxx/xxliquidsoap | grep $TRIGGER)
+##
+	    OIFS="$IFS"; IFS=$'\n'; LIQA_LIST=($(docker run --rm xxaxxelxx/xx_liquidsoap | grep $TRIGGER)); IFS="$OIFS"
+	    DIALOG_LIST=""
+	    for CITEM in "${LIQA_LIST[@]}"; do
+		DIALOG_LIST="$DIALOG_LIST $CITEM :) x"
+	    done
+	    PRESEL="$(dialog --clear --stdout --checklist "Select: " $HEIGHT $WIDTH $LHEIGHT $DIALOG_LIST )"
+	    for LIQITEM in $PRESEL; do
+#	    	echo "$LIQITEM liq dockered"
+	    	docker run -d --name liquidsoap_$LIQITEM --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $LIQITEM
+	    done
 	    ;;
 	    TDYSIMULCAST)
 	    TRIGGER="radioteddy"
@@ -138,6 +147,7 @@ elif [ $MODE = "PLAYER" ]; then
 	    ;;
 	    TDYCHANNELS)
 	    TRIGGER="radioteddy-ch"
+	    LIQAVAILLIST=$(docker run --rm xxaxxelxx/xxliquidsoap | grep $TRIGGER)
 #	    echo "$TRIGGER liq dockered"
 	    	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
 	    ;;
@@ -148,6 +158,7 @@ elif [ $MODE = "PLAYER" ]; then
 	    ;;
 	    OWCHANNELS)
 	    TRIGGER="ostseewelle-ch"
+	    LIQAVAILLIST=$(docker run --rm xxaxxelxx/xxliquidsoap | grep $TRIGGER)
 #	    echo "$TRIGGER liq dockered"
 	    	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
 	    ;;
