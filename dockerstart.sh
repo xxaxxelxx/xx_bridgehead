@@ -85,6 +85,7 @@ elif [ $MODE = "LOADBALANCER" ]; then
     DOCKER_ENV_STRING="-e UPDATEPASSWORD=$UPDATE_ADMIN_PASS"
     docker run -d --name loadbalancer -p 80:80 $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_loadbalancer
     docker run -d --name sshdepot -v /depot -p 65522:22 --restart=always xxaxxelxx/xx_sshdepot
+    docker run -d --name converter --volumes-from sshdepot --restart=always xxaxxelxx/xx_converter
 elif [ $MODE = "PLAYER" ]; then
 #    OIFS="$IFS"; IFS=$'\n'; A_LIST=($(cat icecast.machines.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $3$2}' | sort -u )); IFS="$OIFS"    
     OIFS="$IFS"; IFS=$'\n'; A_LIST=($(cat icecast.machines.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $3$2}' | sort -u )); IFS="$OIFS"
