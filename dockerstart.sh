@@ -87,7 +87,7 @@ elif [ $MODE = "LOADBALANCER" ]; then
     docker run -d --name sshdepot -v /depot -p 65522:22 --restart=always xxaxxelxx/xx_sshdepot
     docker run -d --name converter --volumes-from sshdepot --restart=always xxaxxelxx/xx_converter
 
-    OIFS="$IFS"; IFS=$'\n'; A_CUSTOMERS=($(cat customers.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $1}' | sort -u )); IFS="$OIFS"
+    OIFS="$IFS"; IFS=$'\n'; A_CUSTOMERS=($(cat customer.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $1}' | sort -u )); IFS="$OIFS"
     docker run -d --name logsplitter --volumes-from sshdepot --restart=always xxaxxelxx/xx_logsplitter ${A_CUSTOMERS[@]}
 
 elif [ $MODE = "PLAYER" ]; then
