@@ -91,7 +91,7 @@ elif [ $MODE = "LOADBALANCER" ]; then
     docker run -d --name logsplitter --volumes-from sshdepot --restart=always xxaxxelxx/xx_logsplitter ${A_CUSTOMERS[@]}
 
     CUSTOMER_PASS_ADMIN="$(dialog --stdout --inputbox "Set customer areas admin password please:" $HEIGHT $WIDTH)"
-    DOCKER_ENV_STRING="-e CUSTOMERPASSWORD_ADMIN=$CUSTOMER_PASS_ADMIN"
+    DOCKER_ENV_STRING="-e CUSTOMERPASSWORD_admin=$CUSTOMER_PASS_ADMIN"
     for CUSTOMER in ${A_CUSTOMERS[@]}; do
 	CUSTOMER_PASS="$(dialog --stdout --inputbox "Set $CUSTOMER password please:" $HEIGHT $WIDTH)"
 	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e CUSTOMERPASSWORD_$CUSTOMER=$CUSTOMER_PASS"
