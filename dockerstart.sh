@@ -98,7 +98,11 @@ elif [ $MODE = "LOADBALANCER" ]; then
 	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e CUSTOMERPASSWORD_$CUSTOMER=$CUSTOMER_PASS"
     done
     docker run -d --name customerweb --volumes-from sshdepot $DOCKER_ENV_STRING -p 81:80 --restart=always xxaxxelxx/xx_customerweb  ${A_CUSTOMERS[@]}
-
+    
+    
+    for CUSTOMER in ${A_CUSTOMERS[@]}; do
+	docker run -d --name rrdcollector --volumes-from customerweb --link loadbalancer:loadbalancer -e RRD_LOOP=300 --restart=always xxaxxelxx/xx_rrdcollect $CUSTOMER
+    done
 
 elif [ $MODE = "PLAYER" ]; then
 #    OIFS="$IFS"; IFS=$'\n'; A_LIST=($(cat icecast.machines.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $3$2}' | sort -u )); IFS="$OIFS"    
