@@ -85,7 +85,8 @@ elif [ $MODE = "LOADBALANCER" ]; then
     DOCKER_ENV_STRING="-e UPDATEPASSWORD=$UPDATE_ADMIN_PASS"
     docker run -d --name loadbalancer -p 80:80 $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_loadbalancer
     docker create -v /customer --name customerdatavolume debian /bin/true
-    docker run -d --name sshdepot -v /depot --volumes-from customerdatavolume -p 65522:22 --restart=always xxaxxelxx/xx_sshdepot
+    docker create -v /depot --name depotdatavolume debian /bin/true
+    docker run -d --name sshdepot --volumes-from depotdatavolume --volumes-from customerdatavolume -p 65522:22 --restart=always xxaxxelxx/xx_sshdepot
     docker run -d --name converter --volumes-from sshdepot --restart=always xxaxxelxx/xx_converter
 
     OIFS="$IFS"; IFS=$'\n'; A_CUSTOMERS=($(cat customer.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $1}' | sort -u )); IFS="$OIFS"
