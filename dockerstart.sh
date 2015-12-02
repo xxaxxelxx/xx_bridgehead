@@ -100,6 +100,7 @@ elif [ $MODE = "LOADBALANCER" ]; then
     docker run -d --name customerweb --volumes-from sshdepot $DOCKER_ENV_STRING -p 81:80 --restart=always xxaxxelxx/xx_customerweb  ${A_CUSTOMERS[@]}
     
     
+#    docker run -d --name rrdcollector_admin --volumes-from customerweb --link loadbalancer:loadbalancer -e RRD_LOOP=300 --restart=always xxaxxelxx/xx_rrdcollect admin
 #    for CUSTOMER in ${A_CUSTOMERS[@]}; do
 #	docker run -d --name rrdcollector_$CUSTOMER --volumes-from customerweb --link loadbalancer:loadbalancer -e RRD_LOOP=300 --restart=always xxaxxelxx/xx_rrdcollect $CUSTOMER
 #    done
