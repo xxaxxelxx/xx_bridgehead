@@ -105,6 +105,11 @@ elif [ $MODE = "LOADBALANCER" ]; then
 	docker run -d --name rrdcollector_$CUSTOMER --volumes-from customerweb --link loadbalancer:loadbalancer -e RRD_LOOP=300 --restart=always xxaxxelxx/xx_rrdcollect $CUSTOMER
     done
 
+    docker run -d --name rrdgraph_admin --volumes-from customerweb -e LOOP=300 -e GROUPMARKER=ch --restart=always xxaxxelxx/xx_rrdgraph admin
+    for CUSTOMER in ${A_CUSTOMERS[@]}; do
+	docker run -d --name rrdgraph_$CUSTOMER --volumes-from customerweb -e LOOP=300 -e GROUPMARKER=ch --restart=always xxaxxelxx/xx_rrdgraph $CUSTOMER
+    done
+
 elif [ $MODE = "PLAYER" ]; then
 #    OIFS="$IFS"; IFS=$'\n'; A_LIST=($(cat icecast.machines.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $3$2}' | sort -u )); IFS="$OIFS"    
     OIFS="$IFS"; IFS=$'\n'; A_LIST=($(cat icecast.machines.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $3$2}' | sort -u )); IFS="$OIFS"
