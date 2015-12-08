@@ -26,9 +26,9 @@ proxy	channels	bbr	84.38.65.151	ispone
 proxy	channels	tdy	84.38.65.151	ispone
 proxy	channels	ow	84.38.65.151	ispone
 
-proxy	simulcast	bbr	78.46.202.79	hetzner
-proxy	simulcast	tdy	78.46.202.79	hetzner
-#proxy	simulcast	ow	78.46.202.79	hetzner
-proxy	channels	bbr	78.46.202.79	hetzner
-proxy	channels	tdy	78.46.202.79	hetzner
-proxy	channels	ow	78.46.202.79	hetzner
+proxy	simulcast	bbr	78.47.230.111	hetzner
+proxy	simulcast	tdy	78.47.230.111	hetzner
+#proxy	simulcast	ow	78.47.230.111	hetzner
+proxy	channels	bbr	78.47.230.111	hetzner
+proxy	channels	tdy	78.47.230.111	hetzner
+proxy	channels	ow	78.47.230.111	hetzner

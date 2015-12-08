@@ -184,7 +184,7 @@ elif [ $MODE = "PLAYER" ]; then
 	    ;;
 	esac
     done
-    LOADBALANCER_ADDR="$(dialog --stdout --inputbox "Loadbalancer address please:" $HEIGHT $WIDTH 78.46.202.79)"
+    LOADBALANCER_ADDR="$(dialog --stdout --inputbox "Loadbalancer address please:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING="-e LOADBALANCER_ADDR=$LOADBALANCER_ADDR"
 
     KEY_DECRYPT_PASS="$(dialog --stdout --inputbox "Key decrypt password:" $HEIGHT $WIDTH)"
@@ -193,7 +193,7 @@ elif [ $MODE = "PLAYER" ]; then
     docker run -d --name sshsatellite -v /tmp:/tmp --volumes-from icecast_player $DOCKER_ENV_STRING $DOCKER_ENV_STRING_DECRYPT -e LOOP_SEC=10 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_sshsatellite
     
 
-    UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update admin password please:" $HEIGHT $WIDTH zuppizuppi)"
+    UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update admin password please:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e UPDATE_ADMIN_PASS=$UPDATE_ADMIN_PASS"
     BW_LIMIT="$(dialog --stdout --inputbox "Bandwidth limit in kbitps please:" $HEIGHT $WIDTH 0)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e BW_LIMIT=$BW_LIMIT"
