@@ -1,0 +1,34 @@
+#!/bin/bash
+########################################
+# xx_icecast                           #
+# xx_bridgehead                        #
+# axxel.net | @xxaxxelxx | 2015-OCT-13 #
+########################################
+
+#####################
+##### variables #####
+
+EXT_IF="eth0" # network
+SERVICES_UDP_PLAYERS="8000" 
+
+SERVICES_TCP_PLAYERS="8000" 
+
+for port in $SERVICES_TCP_PLAYERS ; do
+    for address in $PLAYERS_ADDRESSES ; do
+       /sbin/iptables -A services -p tcp -s $1 --dport $port -j service_sec
+       /sbin/iptables -A services -p tcp -s $1 --dport $port -j ACCEPT
+    done
+done
+for port in $SERVICES_UDP_PLAYERS ; do
+    for address in $PLAYERS_ADDRESSES ; do
+       /sbin/iptables -A services -p udp -s $1 --dport $port -j service_sec
+       /sbin/iptables -A services -p udp -s $1 --dport $port -j ACCEPT
+    done
+done
+/sbin/iptables -A services -p ALL -j RETURN # returns control
+
+#################
+##### INPUT #####
+# external
+#/sbin/iptables -A INPUT -p ALL -i $EXT_IF -j service_sec
+#/sbin/iptables -A INPUT -p ALL -i $EXT_IF -j services
