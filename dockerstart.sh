@@ -110,7 +110,7 @@ elif [ $MODE = "LOADBALANCER" ]; then
 	docker run -d --name rrdgraph_$CUSTOMER --volumes-from customerweb -e LOOP=300 -e GROUPMARKER=ch --restart=always xxaxxelxx/xx_rrdgraph $CUSTOMER
     done
     for CUSTOMER in ${A_CUSTOMERS[@]}; do
-	docker run -d --name account_$CUSTOMER --volumes-from sshdepot --restart=always xxaxxelxx/xx_account $CUSTOMER 1.1
+	docker run -d --name account_$CUSTOMER --volumes-from sshdepot --restart=always xxaxxelxx/xx_account $CUSTOMER 0,01
     done
 
 elif [ $MODE = "PLAYER" ]; then
