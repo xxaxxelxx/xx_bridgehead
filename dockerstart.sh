@@ -109,6 +109,9 @@ elif [ $MODE = "LOADBALANCER" ]; then
     for CUSTOMER in ${A_CUSTOMERS[@]}; do
 	docker run -d --name rrdgraph_$CUSTOMER --volumes-from customerweb -e LOOP=300 -e GROUPMARKER=ch --restart=always xxaxxelxx/xx_rrdgraph $CUSTOMER
     done
+    for CUSTOMER in ${A_CUSTOMERS[@]}; do
+	docker run -d --name account_$CUSTOMER --volumes-from sshdepot --restart=always xxaxxelxx/xx_account $CUSTOMER 1
+    done
 
 elif [ $MODE = "PLAYER" ]; then
 #    OIFS="$IFS"; IFS=$'\n'; A_LIST=($(cat icecast.machines.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $3$2}' | sort -u )); IFS="$OIFS"    
