@@ -95,7 +95,6 @@ elif [ $MODE = "LOADBALANCER" ]; then
     CUSTOMER_PASS_ADMIN="$(dialog --stdout --inputbox "Set customer areas admin password please:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING="-e CUSTOMERPASSWORD_admin=$CUSTOMER_PASS_ADMIN"
     for CUSTOMER in ${A_CUSTOMERS[@]}; do
-	CUSTOMER_PASS="$(dialog --stdout --inputbox "Set $CUSTOMER password please:" $HEIGHT $WIDTH)"
 	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e CUSTOMERPASSWORD_$CUSTOMER=$CUSTOMER_PASS"
     done
     docker run -d --name customerweb --volumes-from sshdepot $DOCKER_ENV_STRING -p 81:80 --restart=always xxaxxelxx/xx_customerweb  ${A_CUSTOMERS[@]}
@@ -110,7 +109,8 @@ elif [ $MODE = "LOADBALANCER" ]; then
 	docker run -d --name rrdgraph_$CUSTOMER --volumes-from customerweb -e LOOP=300 -e GROUPMARKER=ch --restart=always xxaxxelxx/xx_rrdgraph $CUSTOMER
     done
     for CUSTOMER in ${A_CUSTOMERS[@]}; do
-	docker run -d --name account_$CUSTOMER --volumes-from sshdepot --restart=always xxaxxelxx/xx_account $CUSTOMER 0,01
+	CUSTOMER_PRICE="$(dialog --stdout --inputbox "Set ${CUSTOMER}'s price in Cent per MByte please:" $HEIGHT $WIDTH 0,00)"
+	docker run -d --name account_$CUSTOMER --volumes-from sshdepot --restart=always xxaxxelxx/xx_account $CUSTOMER $CUSTOMER_PRICE
     done
 
 elif [ $MODE = "PLAYER" ]; then
