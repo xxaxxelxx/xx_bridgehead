@@ -49,7 +49,7 @@ function channelselect() {
 	    for LIQITEM in $PRESEL; do
 		DOCKER_NAME="liquidsoap_$LIQITEM"
 		DOCKER_CMD="docker run -d --name $DOCKER_NAME --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $LIQITEM"
-	    	exec $DOCKER_CMD && echo "$DOCKERCMD" > $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME 
+	    	exec $DOCKER_CMD && echo "$DOCKERCMD" > $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S) 
 		echo "docker run -d --name liquidsoap_$LIQITEM --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $LIQITEM"
 	    done
 }
@@ -82,7 +82,7 @@ if [ $MODE = "PROXY" ]; then
     dialog --yesno "docker run -d --name icecast_proxy -p $IC_PORT:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast proxy"  $HEIGHT $WIDTH
     if [ $? -eq 0 ]; then
     DOCKER_NAME="icecast_proxy" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -p $IC_PORT:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast proxy"
-    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
     else
 	echo	 "Do it again."
 	exit 1
@@ -96,7 +96,7 @@ elif [ $MODE = "LOADBALANCER" ]; then
 
     # RUN LOADBALANCER
     DOCKER_NAME="loadbalancer" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -p 80:80 $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_loadbalancer"
-    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 
     # CREATE VOLUMES
     docker create -v /customer --name customerdatavolume debian /bin/true
@@ -104,17 +104,17 @@ elif [ $MODE = "LOADBALANCER" ]; then
 
     # RUN SSHDEPOT
     DOCKER_NAME="sshdepot" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from depotdatavolume --volumes-from customerdatavolume -p 65522:22 --restart=always xxaxxelxx/xx_sshdepot"
-    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 
 
     # RUN CONVERTER
     DOCKER_NAME="converter" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from sshdepot --restart=always xxaxxelxx/xx_converter"
-    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 
     OIFS="$IFS"; IFS=$'\n'; A_CUSTOMERS=($(cat customer.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $1}' | sort -u )); IFS="$OIFS"
     # RUN LOGSPLITTER
     DOCKER_NAME="logsplitter" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from sshdepot --restart=always xxaxxelxx/xx_logsplitter ${A_CUSTOMERS[@]}"
-    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 
     CUSTOMER_PASS_ADMIN="$(dialog --stdout --inputbox "Set customer areas admin password please:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING="-e CUSTOMERPASSWORD_admin=$CUSTOMER_PASS_ADMIN"
@@ -124,32 +124,32 @@ elif [ $MODE = "LOADBALANCER" ]; then
     done
     # RUN CUSTOMERWEB
     DOCKER_NAME="customerweb" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from sshdepot $DOCKER_ENV_STRING -p 81:80 --restart=always xxaxxelxx/xx_customerweb  ${A_CUSTOMERS[@]}"
-    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 
     # RUN RRDCOLLECTOR ADMIN
     DOCKER_NAME="rrdcollector_admin" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from customerweb --link loadbalancer:loadbalancer -e RRD_LOOP=300 --restart=always xxaxxelxx/xx_rrdcollect admin"
-    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
     
     for CUSTOMER in ${A_CUSTOMERS[@]}; do
 	# RUN RRDCOLLECTOR CUSTOMERS
         DOCKER_NAME="rrdcollector_$CUSTOMER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from customerweb --link loadbalancer:loadbalancer -e RRD_LOOP=300 --restart=always xxaxxelxx/xx_rrdcollect $CUSTOMER"
-        $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+        $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
     done
 
     # RUN RRDGRAPH ADMIN
     DOCKER_NAME="rrdgraph_admin" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from customerweb -e LOOP=300 -e GROUPMARKER=ch --restart=always xxaxxelxx/xx_rrdgraph admin"
-    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 
     for CUSTOMER in ${A_CUSTOMERS[@]}; do
 	# RUN RRDGRAPH CUSTOMERS
 	DOCKER_NAME="rrdgraph_$CUSTOMER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from customerweb -e LOOP=300 -e GROUPMARKER=ch --restart=always xxaxxelxx/xx_rrdgraph $CUSTOMER"
-	$DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+	$DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
     done
     for CUSTOMER in ${A_CUSTOMERS[@]}; do
 	# RUN ACCOUNT CUSTOMERS
 	CUSTOMER_PRICE="$(dialog --stdout --inputbox "Set ${CUSTOMER}'s price in Cent per MByte please:" $HEIGHT $WIDTH 0,00)"
 	DOCKER_NAME="account_$CUSTOMER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from sshdepot --restart=always xxaxxelxx/xx_account $CUSTOMER $CUSTOMER_PRICE"
-        $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+        $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
     done
 
 elif [ $MODE = "PLAYER" ]; then
@@ -191,7 +191,7 @@ elif [ $MODE = "PLAYER" ]; then
     dialog --yesno "docker run -d --name icecast_player -p 80:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player"  $HEIGHT $WIDTH
     if [ $? -eq 0 ]; then
 	DOCKER_NAME="icecast_player" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -p 80:$IC_PORT $DOCKER_ENV_STRING -v /usr/share/icecast2/web -v /var/log/icecast2/ --restart=always xxaxxelxx/xx_icecast player"
-	$DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+	$DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
     else
 	echo "Do it again."
 	exit 1
@@ -201,7 +201,7 @@ elif [ $MODE = "PLAYER" ]; then
 	    BBRSIMULCAST)
 	    TRIGGER="bbradio"
 	    DOCKER_NAME="liquidsoap_$TRIGGER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER"
-	    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+	    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 	    ;;
 	    BBRCHANNELS)
 	    TRIGGER="bbradio-ch"
@@ -210,7 +210,7 @@ elif [ $MODE = "PLAYER" ]; then
 	    TDYSIMULCAST)
 	    TRIGGER="radioteddy"
 	    DOCKER_NAME="liquidsoap_$TRIGGER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER"
-	    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+	    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 	    ;;
 	    TDYCHANNELS)
 	    TRIGGER="radioteddy-ch"
@@ -219,7 +219,7 @@ elif [ $MODE = "PLAYER" ]; then
 	    OWSIMULCAST)
 	    TRIGGER="ostseewelle"
 	    DOCKER_NAME="liquidsoap_$TRIGGER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER"
-	    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+	    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 	    ;;
 	    OWCHANNELS)
 	    TRIGGER="ostseewelle-ch"
@@ -234,7 +234,7 @@ elif [ $MODE = "PLAYER" ]; then
     DOCKER_ENV_STRING_DECRYPT="-e KEY_DECRYPT_PASS=$KEY_DECRYPT_PASS"
 
     DOCKER_NAME="sshsatellite" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -v /tmp:/tmp --volumes-from icecast_player $DOCKER_ENV_STRING $DOCKER_ENV_STRING_DECRYPT -e LOOP_SEC=10 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_sshsatellite"
-    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 
     UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update admin password please:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e UPDATE_ADMIN_PASS=$UPDATE_ADMIN_PASS"
@@ -242,7 +242,7 @@ elif [ $MODE = "PLAYER" ]; then
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e BW_LIMIT=$BW_LIMIT"
 
     DOCKER_NAME="pulse" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro $DOCKER_ENV_STRING -e LOOP_SEC=5 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_pulse"
-    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 fi
 
 ./icecast_trigger.sh &
