@@ -81,11 +81,14 @@ if [ $MODE = "PROXY" ]; then
 
     dialog --yesno "docker run -d --name icecast_proxy -p $IC_PORT:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast proxy"  $HEIGHT $WIDTH
     if [ $? -eq 0 ]; then
-	docker run -d --name icecast_proxy -p $IC_PORT:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast proxy	
+    DOCKER_NAME="icecast_proxy" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -p $IC_PORT:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast proxy"
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
     else
 	echo	 "Do it again."
 	exit 1
     fi
+
+
 elif [ $MODE = "LOADBALANCER" ]; then
     # UPDATE ADMIN PASSWORD
     UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update password please:" $HEIGHT $WIDTH)"
@@ -136,8 +139,6 @@ elif [ $MODE = "LOADBALANCER" ]; then
     # RUN RRDGRAPH ADMIN
     DOCKER_NAME="rrdgraph_admin" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from customerweb -e LOOP=300 -e GROUPMARKER=ch --restart=always xxaxxelxx/xx_rrdgraph admin"
     $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
-#    DOCKER_NAME="" && DOCKER_CMD=""
-#    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
 
     for CUSTOMER in ${A_CUSTOMERS[@]}; do
 	# RUN RRDGRAPH CUSTOMERS
@@ -189,19 +190,18 @@ elif [ $MODE = "PLAYER" ]; then
 
     dialog --yesno "docker run -d --name icecast_player -p 80:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player"  $HEIGHT $WIDTH
     if [ $? -eq 0 ]; then
-#	echo "ic player dockered"
-	docker run -d --name icecast_player -p 80:$IC_PORT $DOCKER_ENV_STRING -v /usr/share/icecast2/web -v /var/log/icecast2/ --restart=always xxaxxelxx/xx_icecast player
+	DOCKER_NAME="icecast_player" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -p 80:$IC_PORT $DOCKER_ENV_STRING -v /usr/share/icecast2/web -v /var/log/icecast2/ --restart=always xxaxxelxx/xx_icecast player"
+	$DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
     else
 	echo "Do it again."
 	exit 1
     fi
     for LIQS in $PRESEL; do
-#    echo "x $LIQS"
 	case $LIQS in
 	    BBRSIMULCAST)
 	    TRIGGER="bbradio"
-#	    echo "$TRIGGER liq dockered"
-	    	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+	    DOCKER_NAME="liquidsoap_$TRIGGER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER"
+	    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
 	    ;;
 	    BBRCHANNELS)
 	    TRIGGER="bbradio-ch"
@@ -209,7 +209,8 @@ elif [ $MODE = "PLAYER" ]; then
 	    ;;
 	    TDYSIMULCAST)
 	    TRIGGER="radioteddy"
-	    	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+	    DOCKER_NAME="liquidsoap_$TRIGGER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER"
+	    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
 	    ;;
 	    TDYCHANNELS)
 	    TRIGGER="radioteddy-ch"
@@ -217,7 +218,8 @@ elif [ $MODE = "PLAYER" ]; then
 	    ;;
 	    OWSIMULCAST)
 	    TRIGGER="ostseewelle"
-	    	docker run -d --name liquidsoap_$TRIGGER --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER
+	    DOCKER_NAME="liquidsoap_$TRIGGER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $TRIGGER"
+	    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
 	    ;;
 	    OWCHANNELS)
 	    TRIGGER="ostseewelle-ch"
@@ -231,15 +233,16 @@ elif [ $MODE = "PLAYER" ]; then
     KEY_DECRYPT_PASS="$(dialog --stdout --inputbox "Key decrypt password:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING_DECRYPT="-e KEY_DECRYPT_PASS=$KEY_DECRYPT_PASS"
 
-    docker run -d --name sshsatellite -v /tmp:/tmp --volumes-from icecast_player $DOCKER_ENV_STRING $DOCKER_ENV_STRING_DECRYPT -e LOOP_SEC=10 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_sshsatellite
+    DOCKER_NAME="sshsatellite" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -v /tmp:/tmp --volumes-from icecast_player $DOCKER_ENV_STRING $DOCKER_ENV_STRING_DECRYPT -e LOOP_SEC=10 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_sshsatellite"
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
 
     UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update admin password please:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e UPDATE_ADMIN_PASS=$UPDATE_ADMIN_PASS"
     BW_LIMIT="$(dialog --stdout --inputbox "Bandwidth limit in kbitps please:" $HEIGHT $WIDTH 0)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e BW_LIMIT=$BW_LIMIT"
 
-    docker run -d --name pulse -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro $DOCKER_ENV_STRING -e LOOP_SEC=5 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_pulse
-
+    DOCKER_NAME="pulse" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro $DOCKER_ENV_STRING -e LOOP_SEC=5 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_pulse"
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
 fi
 
 ./icecast_trigger.sh &
