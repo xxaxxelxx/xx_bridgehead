@@ -4,6 +4,7 @@ test -r icecast.machines.list
 WIDTH=60; HEIGHT=30; LHEIGHT=25
 RES=$(dialog --clear --stdout --radiolist "Select your mode" $WIDTH $HEIGHT $LHEIGHT proxy mode aa player mode bb loadbalancer mode cc)
 MODE="UNDEF"
+RUNDIR="RUN"
 case $RES in
 proxy)
     MODE="PROXY"
@@ -15,6 +16,8 @@ loadbalancer)
     MODE="LOADBALANCER"
 ;;
 esac
+
+test -d $RUNDIR || mkdir -p $RUNDIR 
 
 function set_ip() {
     OIFS="$IFS"; IFS=$'\n'; A_IPLIST=($(cat icecast.machines.list | grep -v -e '^#' | grep -v -e '^$' | grep -iw $2 | grep -iw $3 | grep -iw $4 | awk '{print $4}')); IFS="$OIFS"
@@ -44,9 +47,13 @@ function channelselect() {
 	    done
 	    PRESEL="$(dialog --clear --stdout --checklist "Select: " $HEIGHT $WIDTH $LHEIGHT $DIALOG_LIST )"
 	    for LIQITEM in $PRESEL; do
-	    	docker run -d --name liquidsoap_$LIQITEM --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $LIQITEM
+		DOCKER_NAME="liquidsoap_$LIQITEM"
+		DOCKER_CMD="docker run -d --name $DOCKER_NAME --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $LIQITEM"
+	    	exec $DOCKER_CMD && echo "$DOCKERCMD" > $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME 
+		echo "docker run -d --name liquidsoap_$LIQITEM --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $LIQITEM"
 	    done
 }
+
 
 if [ $MODE = "PROXY" ]; then
     DOCKER_ENV_STRING=$(selector master | {
@@ -83,7 +90,12 @@ elif [ $MODE = "LOADBALANCER" ]; then
     # UPDATE ADMIN PASSWORD
     UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update password please:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING="-e UPDATEPASSWORD=$UPDATE_ADMIN_PASS"
-    docker run -d --name loadbalancer -p 80:80 $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_loadbalancer
+
+    # RUN LOADBALANCER
+    DOCKER_NAME="loadbalancer" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -p 80:80 $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_loadbalancer"
+    exec $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+
+
     docker create -v /customer --name customerdatavolume debian /bin/true
     docker create -v /depot --name depotdatavolume debian /bin/true
     docker run -d --name sshdepot --volumes-from depotdatavolume --volumes-from customerdatavolume -p 65522:22 --restart=always xxaxxelxx/xx_sshdepot
@@ -195,7 +207,6 @@ elif [ $MODE = "PLAYER" ]; then
     DOCKER_ENV_STRING_DECRYPT="-e KEY_DECRYPT_PASS=$KEY_DECRYPT_PASS"
 
     docker run -d --name sshsatellite -v /tmp:/tmp --volumes-from icecast_player $DOCKER_ENV_STRING $DOCKER_ENV_STRING_DECRYPT -e LOOP_SEC=10 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_sshsatellite
-    
 
     UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update admin password please:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e UPDATE_ADMIN_PASS=$UPDATE_ADMIN_PASS"
@@ -209,22 +220,3 @@ fi
 ./icecast_trigger.sh &
 
 exit
-
-# PLAY
-#docker run -d --name icecast_proxy_test -p 80:8000 -e IC_PORT=8000 -e PROXY_SERVER_PORT=8000 \
-#    -e SIMULCAST_PROXY_SERVER_BBR=141.16.141.2 -e CHANNEL_PROXY_SERVER_BBR=62.225.48.243 \
-#    -e SIMULCAST_PROXY_SERVER_TDY=141.16.141.2 -e CHANNEL_PROXY_SERVER_TDY=62.225.48.243 \
-#    -e SIMULCAST_PROXY_SERVER_OW=141.16.141.2 -e CHANNEL_PROXY_SERVER_OW=62.225.48.243 \
-#    -e IC_ADMIN_PASS=12345678 \
-#    -e IC_SOURCE_PASS=12345678 \    
-#    --restart=always \
-#    xxaxxelxx/xx_icecast proxy
-
-# PROX
-#docker run -d --name icecast_proxy_test -p 8000:8000 -e IC_PORT=8000 -e MASTER_SERVER_PORT=80 \
-#    -e SIMULCAST_MASTER_SERVER_BBR=141.16.141.2 -e CHANNEL_MASTER_SERVER_BBR=62.225.48.243 \
-#    -e SIMULCAST_MASTER_SERVER_TDY=141.16.141.2 -e CHANNEL_MASTER_SERVER_TDY=62.225.48.243 \
-#    -e SIMULCAST_MASTER_SERVER_OW=141.16.141.2 -e CHANNEL_MASTER_SERVER_OW=62.225.48.243 \
-#    -e IC_ADMIN_PASS=12345678 \
-#    --restart=always \
-#    xxaxxelxx/xx_icecast proxy
