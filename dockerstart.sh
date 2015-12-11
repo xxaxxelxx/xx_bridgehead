@@ -93,16 +93,25 @@ elif [ $MODE = "LOADBALANCER" ]; then
 
     # RUN LOADBALANCER
     DOCKER_NAME="loadbalancer" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -p 80:80 $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_loadbalancer"
-    exec $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
 
-
+    # CREATE VOLUMES
     docker create -v /customer --name customerdatavolume debian /bin/true
     docker create -v /depot --name depotdatavolume debian /bin/true
-    docker run -d --name sshdepot --volumes-from depotdatavolume --volumes-from customerdatavolume -p 65522:22 --restart=always xxaxxelxx/xx_sshdepot
-    docker run -d --name converter --volumes-from sshdepot --restart=always xxaxxelxx/xx_converter
+
+    # RUN SSHDEPOT
+    DOCKER_NAME="sshdepot" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from depotdatavolume --volumes-from customerdatavolume -p 65522:22 --restart=always xxaxxelxx/xx_sshdepot"
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+
+
+    # RUN CONVERTER
+    DOCKER_NAME="converter" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from sshdepot --restart=always xxaxxelxx/xx_converter"
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
 
     OIFS="$IFS"; IFS=$'\n'; A_CUSTOMERS=($(cat customer.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $1}' | sort -u )); IFS="$OIFS"
-    docker run -d --name logsplitter --volumes-from sshdepot --restart=always xxaxxelxx/xx_logsplitter ${A_CUSTOMERS[@]}
+    # RUN LOGSPLITTER
+    DOCKER_NAME="logsplitter" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from sshdepot --restart=always xxaxxelxx/xx_logsplitter ${A_CUSTOMERS[@]}"
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
 
     CUSTOMER_PASS_ADMIN="$(dialog --stdout --inputbox "Set customer areas admin password please:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING="-e CUSTOMERPASSWORD_admin=$CUSTOMER_PASS_ADMIN"
@@ -110,20 +119,36 @@ elif [ $MODE = "LOADBALANCER" ]; then
 	CUSTOMER_PASS="$(dialog --stdout --inputbox "Set $CUSTOMER password please:" $HEIGHT $WIDTH)"
 	DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e CUSTOMERPASSWORD_$CUSTOMER=$CUSTOMER_PASS"
     done
-    docker run -d --name customerweb --volumes-from sshdepot $DOCKER_ENV_STRING -p 81:80 --restart=always xxaxxelxx/xx_customerweb  ${A_CUSTOMERS[@]}
+    # RUN CUSTOMERWEB
+    DOCKER_NAME="customerweb" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from sshdepot $DOCKER_ENV_STRING -p 81:80 --restart=always xxaxxelxx/xx_customerweb  ${A_CUSTOMERS[@]}"
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+
+    # RUN RRDCOLLECTOR ADMIN
+    DOCKER_NAME="rrdcollector_admin" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from customerweb --link loadbalancer:loadbalancer -e RRD_LOOP=300 --restart=always xxaxxelxx/xx_rrdcollect admin"
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
     
-    docker run -d --name rrdcollector_admin --volumes-from customerweb --link loadbalancer:loadbalancer -e RRD_LOOP=300 --restart=always xxaxxelxx/xx_rrdcollect admin
     for CUSTOMER in ${A_CUSTOMERS[@]}; do
-	docker run -d --name rrdcollector_$CUSTOMER --volumes-from customerweb --link loadbalancer:loadbalancer -e RRD_LOOP=300 --restart=always xxaxxelxx/xx_rrdcollect $CUSTOMER
+	# RUN RRDCOLLECTOR CUSTOMERS
+        DOCKER_NAME="rrdcollector_$CUSTOMER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from customerweb --link loadbalancer:loadbalancer -e RRD_LOOP=300 --restart=always xxaxxelxx/xx_rrdcollect $CUSTOMER"
+        $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
     done
 
-    docker run -d --name rrdgraph_admin --volumes-from customerweb -e LOOP=300 -e GROUPMARKER=ch --restart=always xxaxxelxx/xx_rrdgraph admin
+    # RUN RRDGRAPH ADMIN
+    DOCKER_NAME="rrdgraph_admin" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from customerweb -e LOOP=300 -e GROUPMARKER=ch --restart=always xxaxxelxx/xx_rrdgraph admin"
+    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+#    DOCKER_NAME="" && DOCKER_CMD=""
+#    $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
+
     for CUSTOMER in ${A_CUSTOMERS[@]}; do
-	docker run -d --name rrdgraph_$CUSTOMER --volumes-from customerweb -e LOOP=300 -e GROUPMARKER=ch --restart=always xxaxxelxx/xx_rrdgraph $CUSTOMER
+	# RUN RRDGRAPH CUSTOMERS
+	DOCKER_NAME="rrdgraph_$CUSTOMER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from customerweb -e LOOP=300 -e GROUPMARKER=ch --restart=always xxaxxelxx/xx_rrdgraph $CUSTOMER"
+	$DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
     done
     for CUSTOMER in ${A_CUSTOMERS[@]}; do
+	# RUN ACCOUNT CUSTOMERS
 	CUSTOMER_PRICE="$(dialog --stdout --inputbox "Set ${CUSTOMER}'s price in Cent per MByte please:" $HEIGHT $WIDTH 0,00)"
-	docker run -d --name account_$CUSTOMER --volumes-from sshdepot --restart=always xxaxxelxx/xx_account $CUSTOMER $CUSTOMER_PRICE
+	DOCKER_NAME="account_$CUSTOMER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from sshdepot --restart=always xxaxxelxx/xx_account $CUSTOMER $CUSTOMER_PRICE"
+        $DOCKER_CMD && echo "$DOCKER_CMD" >> $RUNDIR/$(date +%Y-%m-%d_%H%M%S).$DOCKER_NAME
     done
 
 elif [ $MODE = "PLAYER" ]; then
