@@ -185,7 +185,8 @@ elif [ $MODE = "PLAYER" ]; then
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e IC_ADMIN_PASS=$IC_ADMIN_PASS"
 
     # ICECAST SOURCE PASSWORD
-    IC_SOURCE_PASS="$(dialog --stdout --inputbox "Icecast source password please:" $HEIGHT $WIDTH)"
+#    IC_SOURCE_PASS="$(dialog --stdout --inputbox "Icecast source password please:" $HEIGHT $WIDTH)"
+    IC_SOURCE_PASS="$(echo $(($RANDOM * $RANDOM)) | md5sum | awk 'print $1')"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e IC_SOURCE_PASS=$IC_SOURCE_PASS"
 
     dialog --yesno "docker run -d --name icecast_player -p 80:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player"  $HEIGHT $WIDTH
