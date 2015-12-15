@@ -151,7 +151,8 @@ elif [ $MODE = "LOADBALANCER" ]; then
 	DISCOUNTTYPE="othersss"
 	dialog --stdout --inputbox "Set ${CUSTOMER}'s discount type. Is it retroactive?" $HEIGHT $WIDTH && DISCOUNTTYPE="retroactive"
 #	DOCKER_NAME="account_$CUSTOMER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from sshdepot --restart=always xxaxxelxx/xx_account $CUSTOMER $CUSTOMER_PRICE $DISCOUNTTYPE"
-	DOCKER_NAME="account_$CUSTOMER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from sshdepot --restart=always xxaxxelxx/xx_account $CUSTOMER 0.00 $DISCOUNTTYPE"
+
+	DOCKER_NAME="account_$CUSTOMER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from sshdepot --restart=always xxaxxelxx/xx_account $CUSTOMER $CUSTOMER_PRICE $DISCOUNTTYPE"
         $DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
     done
 
