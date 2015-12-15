@@ -111,7 +111,7 @@ elif [ $MODE = "LOADBALANCER" ]; then
 #    DOCKER_NAME="converter" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from sshdepot --restart=always xxaxxelxx/xx_converter"
 #    $DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 
-#    OIFS="$IFS"; IFS=$'\n'; A_CUSTOMERS=($(cat customer.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $1}' | sort -u )); IFS="$OIFS"
+    OIFS="$IFS"; IFS=$'\n'; A_CUSTOMERS=($(cat customer.list | grep -v -e '^#' | grep -v -e '^$' | awk '{print $1}' | sort -u )); IFS="$OIFS"
     # RUN LOGSPLITTER
 #    DOCKER_NAME="logsplitter" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from sshdepot --restart=always xxaxxelxx/xx_logsplitter ${A_CUSTOMERS[@]}"
 #    $DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
@@ -147,7 +147,7 @@ elif [ $MODE = "LOADBALANCER" ]; then
 #    done
     for CUSTOMER in ${A_CUSTOMERS[@]}; do
 	# RUN ACCOUNT CUSTOMERS
-	CUSTOMER_PRICE="$(dialog --stdout --inputbox "Set ${CUSTOMER}'s price in Euro per GByte please. Use the following format:0#0.06|10000#0.05|20000#0.03" $HEIGHT $WIDTH 0#0.06|10000#0.054|25000#0.046|50000#0.035|100000#0.026|250000#0.018|500000#0.012)"
+	CUSTOMER_PRICE="$(dialog --stdout --inputbox "Set ${CUSTOMER}'s price in Euro per GByte please. Use the following format:0#0.06|10000#0.05|20000#0.03" $HEIGHT $WIDTH \"0#0.06|10000#0.054|25000#0.046|50000#0.035|100000#0.026|250000#0.018|500000#0.012\")"
 	DISCOUNTTYPE="other"
 	dialog --stdout --inputbox "Set ${CUSTOMER}'s discount type. Is it retroactive?" $HEIGHT $WIDTH && DISCOUNTTYPE="retroactive"
 	DOCKER_NAME="account_$CUSTOMER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from sshdepot --restart=always xxaxxelxx/xx_account $CUSTOMER \'$CUSTOMER_PRICE\' $DISCOUNTTYPE"
