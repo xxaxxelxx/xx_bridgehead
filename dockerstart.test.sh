@@ -147,7 +147,7 @@ elif [ $MODE = "LOADBALANCER" ]; then
 #    done
     for CUSTOMER in ${A_CUSTOMERS[@]}; do
 	# RUN ACCOUNT CUSTOMERS
-	CUSTOMER_PRICE="$(dialog --stdout --inputbox "Set ${CUSTOMER}'s price in Euro per GByte please. Use the following format:0#0.06|10000#0.05|20000#0.03" $HEIGHT $WIDTH \'0#0.06|10000#0.054|25000#0.046|50000#0.035|100000#0.026|250000#0.018|500000#0.012\')"
+	CUSTOMER_PRICE="$(dialog --stdout --inputbox "Set ${CUSTOMER}'s price in Euro per GByte please. Use the following format:0#0.06|10000#0.05|20000#0.03" $HEIGHT $WIDTH '0#0.06|10000#0.054|25000#0.046|50000#0.035|100000#0.026|250000#0.018|500000#0.012')"
 	DISCOUNTTYPE="othersss"
 	dialog --stdout --inputbox "Set ${CUSTOMER}'s discount type. Is it retroactive?" $HEIGHT $WIDTH && DISCOUNTTYPE="retroactive"
 	DOCKER_NAME="account_$CUSTOMER" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from sshdepot --restart=always xxaxxelxx/xx_account $CUSTOMER \'$CUSTOMER_PRICE\' $DISCOUNTTYPE"
