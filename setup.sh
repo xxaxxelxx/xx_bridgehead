@@ -44,6 +44,10 @@ function f_proxy() {
 	    chmod 755 /etc/network/if-up.d/iptables
 	fi
     fi
+    test -r rc.local.proxy
+    if [ $? -eq 0 ]; then
+	cp -f rc.local.proxy /etc/rc.local
+    fi
 }
 
 function f_player() {
@@ -60,6 +64,10 @@ function f_player() {
 	    cp -f set.iptables.sh.player /etc/network/if-up.d/iptables
 	    chmod 755 /etc/network/if-up.d/iptables
 	fi
+    fi
+    test -r rc.local.player
+    if [ $? -eq 0 ]; then
+	cp -f rc.local.player /etc/rc.local
     fi
 }
 
