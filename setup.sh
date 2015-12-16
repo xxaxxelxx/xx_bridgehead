@@ -23,7 +23,7 @@ function f_basics() {
     fi
     apt-get -qq -y update
     apt-get -qq -y dist-upgrade
-    apt-get -qq -y install rsync rdate mc telnet dialog 
+    apt-get -qq -y install rsync rdate mc telnet dialog bc 
     echo "root:$(date | md5sum | awk '{print $1}')" | chpasswd
     test -n $2 && echo "$2" > /etc/hostname
 }
