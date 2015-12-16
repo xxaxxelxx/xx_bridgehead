@@ -13,8 +13,8 @@
 
 sleep 60
 
-cd /xx_bridgehead && ./iptables.block_clients_master_access_at_player.sh
-cd /xx_bridgehead && ./iptables.block_dos_at_player.sh
-cd /xx_bridgehead && ./watchdog.sh &
+cd /root/xx_bridgehead && ./iptables.block_clients_master_access_at_player.sh
+cd /root/xx_bridgehead && ./iptables.block_dos_at_player.sh
+cd /root/xx_bridgehead && ./watchdog.sh &
 
 exit 0

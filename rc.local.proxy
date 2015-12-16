@@ -13,6 +13,6 @@
 
 sleep 60
 
-cd /xx_bridgehead && ./iptables.activate_proxy_player_filter.sh
+cd /root/xx_bridgehead && ./iptables.activate_proxy_player_filter.sh
 
 exit 0
