@@ -26,6 +26,4 @@ while true; do
 sleep $SLEEP
 done
 
-
-
 exit
