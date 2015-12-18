@@ -17,9 +17,12 @@ function f_basics() {
 	cat authorized_keys2 >> ~/.ssh/authorized_keys2 
 	chmod 644 ~/.ssh/authorized_keys2
     fi
-    cat /etc/apt/sources.list | grep $RELEASE-backports > /dev/null
-    if [ $? -ne 0 ]; then
-	echo "deb http://http.debian.net/debian $RELEASE-backports main" >> /etc/apt/sources.list
+    uname -a | grep -i debian > /dev/null
+    if [ $? -eq 0 ]; then
+	cat /etc/apt/sources.list | grep $RELEASE-backports > /dev/null
+	if [ $? -ne 0 ]; then
+	    echo "deb http://http.debian.net/debian $RELEASE-backports main" >> /etc/apt/sources.list
+	fi
     fi
     apt-get -qq -y update
     apt-get -qq -y dist-upgrade
@@ -45,7 +48,7 @@ function f_proxy() {
 	fi
     fi
     test -r rc.local.proxy
-    if [ $? -eq 0 ]; then
+    if [ $? -eq 0 ]; th
 	cp -f rc.local.proxy /etc/rc.local
     fi
 }
