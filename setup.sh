@@ -48,7 +48,7 @@ function f_proxy() {
 	fi
     fi
     test -r rc.local.proxy
-    if [ $? -eq 0 ]; th
+    if [ $? -eq 0 ]; then
 	cp -f rc.local.proxy /etc/rc.local
     fi
 }
