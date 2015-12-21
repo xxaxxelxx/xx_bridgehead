@@ -10,7 +10,7 @@ done
 
 echo "REMOVING CONTAINERS"
 RMLIST=($(docker ps -a | grep $ID | sed -e 's/\ *$//' | sed 's/.* //'))
-IMAGELIST=($(docker ps -a | grep $ID | awk '{print $2}'))
+IMAGELIST=($(docker ps -a | grep $ID | awk '{print $2}' | sort -u))
 for ELEM in ${STOPLIST[@]}; do
     docker rm $ELEM
 done
@@ -21,6 +21,8 @@ for ELEM in ${IMAGELIST[@]}; do
 done
 
 echo "STARTING CONTAINERS"
-bash RUN/${ID}*
+for FILE in RUN/${ID}*; do
+    cat $FILE | bash
+done
 
 exit
