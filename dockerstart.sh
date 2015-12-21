@@ -81,12 +81,15 @@ if [ $MODE = "PROXY" ]; then
 
     dialog --yesno "docker run -d --name icecast_proxy -p $IC_PORT:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast proxy"  $HEIGHT $WIDTH
     if [ $? -eq 0 ]; then
-    DOCKER_NAME="icecast_proxy" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -p $IC_PORT:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast proxy"
-    $DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
+	DOCKER_NAME="icecast_proxy" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -p $IC_PORT:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast proxy"
+#X	$DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
     else
 	echo	 "Do it again."
 	exit 1
     fi
+
+    DOCKER_NAME="pulse" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro $DOCKER_ENV_STRING -e LOOP_SEC=5 --restart=always xxaxxelxx/xx_pulse"
+    $DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 
 
 elif [ $MODE = "LOADBALANCER" ]; then
