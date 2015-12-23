@@ -82,7 +82,7 @@ if [ $MODE = "PROXY" ]; then
     dialog --yesno "docker run -d --name icecast_proxy -p $IC_PORT:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast proxy"  $HEIGHT $WIDTH
     if [ $? -eq 0 ]; then
 	DOCKER_NAME="icecast_proxy" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -p $IC_PORT:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast proxy"
-#X	$DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
+	$DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
     else
 	echo	 "Do it again."
 	exit 1
