@@ -29,3 +29,10 @@ proxy	simulcast	tdy	78.47.230.111	hetzner
 proxy	channels	bbr	78.47.230.111	hetzner
 proxy	channels	tdy	78.47.230.111	hetzner
 proxy	channels	ow	78.47.230.111	hetzner
+
+proxy	simulcast	bbr	217.160.142.160	1und1
+proxy	simulcast	tdy	217.160.142.160	1und1
+#proxy	simulcast	ow	217.160.142.160	1und1
+proxy	channels	bbr	217.160.142.160	1und1
+proxy	channels	tdy	217.160.142.160	1und1
+proxy	channels	ow	217.160.142.160	1und1
