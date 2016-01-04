@@ -98,7 +98,6 @@ if [ $MODE = "PROXY" ]; then
     DOCKER_NAME="pulse" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro $DOCKER_ENV_STRING -e LOOP_SEC=5 --restart=always xxaxxelxx/xx_pulse"
     $DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 
-
 elif [ $MODE = "LOADBALANCER" ]; then
     # UPDATE ADMIN PASSWORD
     UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update password please:" $HEIGHT $WIDTH)"
@@ -262,7 +261,7 @@ elif [ $MODE = "PLAYER" ]; then
     BW_LIMIT="$(dialog --stdout --inputbox "Bandwidth limit in kbitps please:" $HEIGHT $WIDTH 0)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e BW_LIMIT=$BW_LIMIT"
 
-    DOCKER_NAME="pulse" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro $DOCKER_ENV_STRING -e LOOP_SEC=5 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_pulse"
+    DOCKER_NAME="pulse" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -v /tmp:/host/tmp -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro $DOCKER_ENV_STRING -e LOOP_SEC=5 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_pulse"
     $DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
     ./icecast_trigger.sh &
 fi
