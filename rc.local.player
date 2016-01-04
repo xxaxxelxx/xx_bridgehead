@@ -15,7 +15,7 @@ sleep 60
 
 cd /root/xx_bridgehead && ./iptables.block_clients_master_access_at_player.sh
 cd /root/xx_bridgehead && ./iptables.block_dos_at_player.sh
-cd /root/xx_bridgehead && ./watchdog.sh &
+cd /root/xx_bridgehead && ./pulsedog.sh &
 cd /root/xx_bridgehead && ./icecast_trigger.sh &
 
 exit 0
