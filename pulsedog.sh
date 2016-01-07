@@ -10,11 +10,15 @@ LOGFILE=/tmp/pulse.log
 
 CNT=0
 while true; do
-#
+# LOGGING #
+    test -r $LOGFILE
+    if [ $? -eq 0 ]; then
+	cat $LOGFILE | tail -n 5000 > $LOGFILE.tmp && mv -f $LOGFILE.tmp $LOGFILE
+    fi
     echo "# # # # # # #" >> $LOGFILE
     date >> $LOGFILE
     ps aux | sort -nrk 3 | head -n 20 | grep -v ' 0.0 ' >> $LOGFILE
-#
+# # # # # #
     test -r $PULSEFILE
     if [ $? -eq 0 ]; then
 	PULSEAGE="$(($(date +%s) - $(date +%s -r "$PULSEFILE")))"
