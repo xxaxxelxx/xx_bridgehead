@@ -1,6 +1,6 @@
 #!/bin/bash
 
-while [ test "x$1" != "x" ] ; do
+while test "x$1" != "x"; do
     ID=$1
 
     echo "STOPPING CONTAINERS"
