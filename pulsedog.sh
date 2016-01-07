@@ -6,7 +6,7 @@ EJECT_AT=5
 MAXPULSEAGE=60
 LIMIT=95
 PULSEFILE=/tmp/pulse.cpuload
-LOGFILE=/tmp/pulse.log
+LOGFILE=/root/pulse.log
 
 CNT=0
 while true; do
