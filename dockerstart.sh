@@ -115,6 +115,7 @@ elif [ $MODE = "LOADBALANCER" ]; then
     DOCKER_NAME="sshdepot" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from depotdatavolume --volumes-from customerdatavolume -p 65522:22 --restart=always xxaxxelxx/xx_sshdepot"
     $DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 
+
     # RUN CONVERTER
     DOCKER_NAME="converter" && DOCKER_CMD="docker run -d --name $DOCKER_NAME --volumes-from sshdepot --restart=always xxaxxelxx/xx_converter"
     $DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
@@ -207,11 +208,6 @@ elif [ $MODE = "PLAYER" ]; then
     IC_SOURCE_PASS="$(echo $(($RANDOM * $RANDOM)) | md5sum | awk '{print $1}')"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e IC_SOURCE_PASS=$IC_SOURCE_PASS"
 
-    # CREATE VOLUMES
-#    docker create -v /var/log/icecast2 --name icecastlogvolume debian /bin/true
-#    docker create -v /usr/share/icecast2 --name icecastsharevolume debian /bin/true
-
-#    dialog --yesno "docker run -d --name icecast_player --volumes-from icecastlogvolume -p 80:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player"  $HEIGHT $WIDTH
     dialog --yesno "docker run -d --name icecast_player -p 80:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player"  $HEIGHT $WIDTH
     if [ $? -eq 0 ]; then
 	DOCKER_NAME="icecast_player" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -p 80:$IC_PORT $DOCKER_ENV_STRING -v /usr/share/icecast2/web -v /var/log/icecast2/ --restart=always xxaxxelxx/xx_icecast player"
@@ -257,7 +253,7 @@ elif [ $MODE = "PLAYER" ]; then
     KEY_DECRYPT_PASS="$(dialog --stdout --inputbox "Key decrypt password:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING_DECRYPT="-e KEY_DECRYPT_PASS=$KEY_DECRYPT_PASS"
 
-    DOCKER_NAME="sshsatellite" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -v /tmp:/tmp $DOCKER_ENV_STRING $DOCKER_ENV_STRING_DECRYPT -e LOOP_SEC=10 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_sshsatellite"
+    DOCKER_NAME="sshsatellite" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -v /tmp:/tmp --volumes-from icecast_player $DOCKER_ENV_STRING $DOCKER_ENV_STRING_DECRYPT -e LOOP_SEC=10 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_sshsatellite"
     $DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 
     UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update admin password please:" $HEIGHT $WIDTH)"
