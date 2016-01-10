@@ -17,6 +17,7 @@ loadbalancer)
 ;;
 esac
 
+rm -rf $RUNDIR
 test -d $RUNDIR || mkdir -p $RUNDIR 
 
 function set_ip() {
