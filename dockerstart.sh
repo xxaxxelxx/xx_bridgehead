@@ -208,7 +208,7 @@ elif [ $MODE = "PLAYER" ]; then
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e IC_SOURCE_PASS=$IC_SOURCE_PASS"
 
     # CREATE VOLUMES
-    docker create -v /var/log/icecast2 --name icecastlogvolume debian /bin/true
+#    docker create -v /var/log/icecast2 --name icecastlogvolume debian /bin/true
 #    docker create -v /usr/share/icecast2 --name icecastsharevolume debian /bin/true
 
 #    dialog --yesno "docker run -d --name icecast_player --volumes-from icecastlogvolume -p 80:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player"  $HEIGHT $WIDTH
