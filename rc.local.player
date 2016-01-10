@@ -11,13 +11,13 @@
 #
 # By default this script does nothing.
 
+/usr/bin/docker stop pulse 
 sleep 60
+/usr/bin/docker stop pulse 
 
 cd /root/xx_bridgehead && ./iptables.block_clients_master_access_at_player.sh
 cd /root/xx_bridgehead && ./iptables.block_dos_at_player.sh
-
 cd /root/xx_bridgehead && ./docker.restart.sh icecast liquid sshsat pulse
-
 cd /root/xx_bridgehead && ./pulsedog.sh &
 cd /root/xx_bridgehead && ./icecast_trigger.sh &
 
