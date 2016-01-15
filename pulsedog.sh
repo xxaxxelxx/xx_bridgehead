@@ -4,7 +4,7 @@ SLEEP=60
 ALERTED=1
 EJECT_AT=5
 MAXPULSEAGE=60
-LIMIT=95
+LIMIT=98
 PULSEFILE=/tmp/pulse.cpuload
 LOGFILE=/root/pulse.log
 
