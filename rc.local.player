@@ -12,8 +12,10 @@
 # By default this script does nothing.
 
 /usr/bin/docker stop pulse 
+/usr/bin/docker stop reflector 
 sleep 60
 /usr/bin/docker stop pulse 
+/usr/bin/docker stop reflector 
 
 cd /root/xx_bridgehead && ./iptables.block_clients_master_access_at_player.sh
 cd /root/xx_bridgehead && ./iptables.block_dos_at_player.sh
@@ -21,6 +23,8 @@ cd /root/xx_bridgehead && ./docker.restart.sh icecast liquid sshsat
 cd /root/xx_bridgehead && ./pulsedog.sh &
 cd /root/xx_bridgehead && ./icecast_trigger.sh &
 
+/usr/bin/docker start reflector 
+cd /root/xx_bridgehead && ./docker.restart.sh reflector
 /usr/bin/docker start pulse 
 cd /root/xx_bridgehead && ./docker.restart.sh pulse
 
