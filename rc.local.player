@@ -28,4 +28,6 @@ cd /root/xx_bridgehead && ./docker.restart.sh reflector
 /usr/bin/docker start pulse 
 cd /root/xx_bridgehead && ./docker.restart.sh pulse
 
+cd /root/xx_bridgehead && ./reflectdog.sh &
+
 exit 0

@@ -4,7 +4,7 @@ SLEEP=60
 ALERTED=1
 EJECT_AT=10
 MAXPULSEAGE=60
-LIMIT=97
+EJECTLIMIT=97
 PULSEFILE=/tmp/pulse.cpuload
 LOGFILE=/root/pulse.log
 
@@ -23,7 +23,7 @@ while true; do
     if [ $? -eq 0 ]; then
 	PULSEAGE="$(($(date +%s) - $(date +%s -r "$PULSEFILE")))"
 	LOAD=$(cat $PULSEFILE)
-	if [ $LOAD -ge $LIMIT -o $PULSEAGE -gt $MAXPULSEAGE ]; then 
+	if [ $LOAD -ge $EJECTLIMIT -o $PULSEAGE -gt $MAXPULSEAGE ]; then 
 	    ALERTED=0
 	    CNT=$(($CNT+1))
 	    if [ $CNT -ge $EJECT_AT ]; then
