@@ -16,10 +16,7 @@ while true; do
     if [ $? -eq 0 ]; then
 	cat $LOGFILE | tail -n 5000 > $LOGFILE.tmp && mv -f $LOGFILE.tmp $LOGFILE
     fi
-    echo "# # # # # # #" >> $LOGFILE
-    date >> $LOGFILE
-    ps aux | sort -nrk 3 | head -n 20 | grep -v ' 0.0 ' >> $LOGFILE
-# # # # # #
+#    ps aux | sort -nrk 3 | head -n 20 | grep -v ' 0.0 ' >> $LOGFILE
     test -r $PULSEFILE
     if [ $? -eq 0 ]; then
 	LOAD=$(cat $PULSEFILE)
@@ -29,6 +26,7 @@ while true; do
 		if [ $REFCNT -ge $REFLECT_AT ]; then
 		    echo "X X X X X X X" >> $LOGFILE
 		    echo "R E F L E C T" >> $LOGFILE
+		    date >> $LOGFILE
 		    echo "X X X X X X X" >> $LOGFILE
 
 		    test -r /root/loadbalancer.addr
@@ -49,6 +47,7 @@ while true; do
 		if [ $ACCCNT -ge $ACCEPT_AT ]; then
 		    echo "X X X X X X" >> $LOGFILE
 		    echo "A C C E P T" >> $LOGFILE
+		    date >> $LOGFILE
 		    echo "X X X X X X" >> $LOGFILE
 
 		    if [ $? -eq 0 ]; then

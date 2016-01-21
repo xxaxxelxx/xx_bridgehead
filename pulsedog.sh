@@ -15,9 +15,7 @@ while true; do
     if [ $? -eq 0 ]; then
 	cat $LOGFILE | tail -n 5000 > $LOGFILE.tmp && mv -f $LOGFILE.tmp $LOGFILE
     fi
-    echo "# # # # # # #" >> $LOGFILE
-    date >> $LOGFILE
-    ps aux | sort -nrk 3 | head -n 20 | grep -v ' 0.0 ' >> $LOGFILE
+#    ps aux | sort -nrk 3 | head -n 20 | grep -v ' 0.0 ' >> $LOGFILE
 # # # # # #
     test -r $PULSEFILE
     if [ $? -eq 0 ]; then
@@ -27,8 +25,9 @@ while true; do
 	    ALERTED=0
 	    CNT=$(($CNT+1))
 	    if [ $CNT -ge $EJECT_AT ]; then
-		echo "X X X X X X" >> $LOGFILE
+    		echo "X X X X X X" >> $LOGFILE
 		echo "R E B O O T" >> $LOGFILE
+		date >> $LOGFILE
 		echo "X X X X X X" >> $LOGFILE
 		reboot
 		exit
