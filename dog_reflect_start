@@ -1,4 +1,7 @@
 #!/bin/bash
-cd /root/xx_bridgehead && ./reflectdog.sh &
+cd /root/xx_bridgehead
+pkill reflectdog.sh
+exec ./reflectdog.sh &
+sleep 1
 ps waux | grep reflectdog.sh | grep -v grep
 exit
