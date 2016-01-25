@@ -267,7 +267,7 @@ elif [ $MODE = "PLAYER" ]; then
 
     DOCKER_NAME="reflector" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -e TARGET_SERVER=%0 -e TARGET_PORT=8000 -p 80:80 --restart=always xxaxxelxx/xx_reflector"
     $DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
-    echo "$LOADBALANCER_ADDR" > /root/loadbalancer.addr
+    echo "$LOADBALANCER_ADDR" > /tmp/loadbalancer.addr
 
     UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update admin password please:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e UPDATE_ADMIN_PASS=$UPDATE_ADMIN_PASS"

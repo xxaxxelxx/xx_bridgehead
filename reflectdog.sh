@@ -15,9 +15,9 @@ FORCE="$1"
 
 
 if [ "x$FORCE" == "xR" ]; then
-    test -r /root/loadbalancer.addr
+    test -r /tmp/loadbalancer.addr
     if [ $? -eq 0 ]; then
-	LOADBALANCER=$(cat /root/loadbalancer.addr)
+	LOADBALANCER=$(cat /tmp/loadbalancer.addr)
 	docker stop reflector; docker rm reflector
 	docker run -d --name reflector -e TARGET_SERVER=$LOADBALANCER -e TARGET_PORT=80 -p 80:80 --restart=always xxaxxelxx/xx_reflector
 	iptables -t nat -I DOCKER 1 -p tcp --dport 8000 -j DNAT --to-destination $(iptables -n -L DOCKER | grep -w dpt:80 | awk '{print $5}'):80
@@ -49,9 +49,9 @@ while true; do
 		    date >> $LOGFILE
 		    echo "X X X X X X X" >> $LOGFILE
 
-		    test -r /root/loadbalancer.addr
+		    test -r /tmp/loadbalancer.addr
 		    if [ $? -eq 0 ]; then
-			LOADBALANCER=$(cat /root/loadbalancer.addr)
+			LOADBALANCER=$(cat /tmp/loadbalancer.addr)
 			docker stop reflector; docker rm reflector
 			docker run -d --name reflector -e TARGET_SERVER=$LOADBALANCER -e TARGET_PORT=80 -p 80:80 --restart=always xxaxxelxx/xx_reflector && \
 			iptables -t nat -I DOCKER 1 -p tcp --dport 8000 -j DNAT --to-destination $(iptables -n -L DOCKER | grep -w dpt:80 | awk '{print $5}'):80
