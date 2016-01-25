@@ -13,7 +13,7 @@
 
 /usr/bin/docker stop pulse 
 /usr/bin/docker stop reflector 
-sleep 60
+sleep 10
 /usr/bin/docker stop pulse 
 /usr/bin/docker stop reflector 
 
