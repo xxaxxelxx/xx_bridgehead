@@ -1,4 +1,7 @@
 #!/bin/bash
-cd /root/xx_bridgehead && ./pulsedog.sh &
+cd /root/xx_bridgehead
+pkill pulsedog.sh
+exec ./pulsedog.sh &
+sleep 1
 ps waux | grep pulsedog.sh | grep -v grep
 exit
