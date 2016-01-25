@@ -1,0 +1,3 @@
+#!/bin/bash
+pkill pulsedog.sh && echo KILLED || echo FAILED
+exit

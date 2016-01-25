@@ -1,0 +1,4 @@
+#!/bin/bash
+cd /root/xx_bridgehead && ./reflectdog.sh &
+ps waux | grep reflectdog.sh | grep -v grep
+exit

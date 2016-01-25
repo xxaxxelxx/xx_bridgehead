@@ -1,0 +1,3 @@
+#!/bin/bash
+pkill reflectdog.sh && echo KILLED || echo FAILED
+exit

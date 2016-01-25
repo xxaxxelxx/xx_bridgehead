@@ -1,0 +1,4 @@
+#!/bin/bash
+cd /root/xx_bridgehead && ./pulsedog.sh &
+ps waux | grep pulsedog.sh | grep -v grep
+exit
