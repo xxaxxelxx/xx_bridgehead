@@ -256,7 +256,9 @@ elif [ $MODE = "PLAYER" ]; then
 	esac
     done
     LOADBALANCER_ADDR="$(dialog --stdout --inputbox "Loadbalancer address please:" $HEIGHT $WIDTH)"
-    DOCKER_ENV_STRING="-e LOADBALANCER_ADDR=$LOADBALANCER_ADDR"
+    echo $LOADBALANCER_ADDR > LOADBALANCER_ADDR
+# OLD PRE AUTOMATIC    DOCKER_ENV_STRING="-e LOADBALANCER_ADDR=$LOADBALANCER_ADDR"
+    DOCKER_ENV_STRING="-e LOADBALANCER_ADDR=$(cat LOADBALANCER_ADDR | grep -v '^#' | grep -v '^$' | grep -v '^\ *$' | awk '{print $1}')"
 
     KEY_DECRYPT_PASS="$(dialog --stdout --inputbox "Key decrypt password:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING_DECRYPT="-e KEY_DECRYPT_PASS=$KEY_DECRYPT_PASS"
@@ -280,6 +282,5 @@ elif [ $MODE = "PLAYER" ]; then
     $DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
     ./icecast_trigger.sh &
 fi
-
 
 exit
