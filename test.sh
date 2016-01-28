@@ -264,8 +264,9 @@ elif [ $MODE = "PLAYER" ]; then
     DOCKER_ENV_STRING_DECRYPT="-e KEY_DECRYPT_PASS=$KEY_DECRYPT_PASS"
 
     DOCKER_NAME="sshsatellite" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -v /tmp:/tmp --volumes-from icecast_player $DOCKER_ENV_STRING $DOCKER_ENV_STRING_DECRYPT -e LOOP_SEC=10 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_sshsatellite"
-    $DOCKER_CMD && \
-rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
+$DOCKER_CMD;
+rm -f "$RUNDIR/${DOCKER_NAME}."*
+echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
 
 
     DOCKER_NAME="reflector" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -e TARGET_SERVER=%0 -e TARGET_PORT=8000 -p 80:80 --restart=always xxaxxelxx/xx_reflector"
@@ -280,8 +281,9 @@ rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e LOAD_LIMIT=$LOAD_LIMIT"
 
     DOCKER_NAME="pulse" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -v /tmp:/host/tmp -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro $DOCKER_ENV_STRING -e LOOP_SEC=5 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_pulse"
-    $DOCKER_CMD && \
-rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
+$DOCKER_CMD
+rm -f "$RUNDIR/${DOCKER_NAME}."*
+echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
     ./icecast_trigger.sh &
 fi
 
