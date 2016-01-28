@@ -27,6 +27,7 @@ cd /root/xx_bridgehead && ./docker.restart.sh reflector
 cd /root/xx_bridgehead && ./docker.restart.sh pulse
 
 cd /root/xx_bridgehead && ./reflectdog.sh &
+cd /root/xx_bridgehead && ./loadbaldog.sh &
 
 cd /root/xx_bridgehead && ./iptables.block_clients_master_access_at_player.sh
 cd /root/xx_bridgehead && ./iptables.block_dos_at_player.sh
