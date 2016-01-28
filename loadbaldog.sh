@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SLEEP=60
+SLEEP=10
 LBFILE=LOADBALANCER_ADDR
 LOGFILE=/root/loadbalancer.log
 
