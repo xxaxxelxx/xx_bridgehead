@@ -258,7 +258,7 @@ elif [ $MODE = "PLAYER" ]; then
     LOADBALANCER_ADDR="$(dialog --stdout --inputbox "Loadbalancer address please:" $HEIGHT $WIDTH)"
     echo $LOADBALANCER_ADDR > LOADBALANCER_ADDR
 # OLD PRE AUTOMATIC    DOCKER_ENV_STRING="-e LOADBALANCER_ADDR=$LOADBALANCER_ADDR"
-    DOCKER_ENV_STRING="-e LOADBALANCER_ADDR=$(cat LOADBALANCER_ADDR | grep -v '^#' | grep -v '^$' | grep -v '^\ *$' | awk '{print $1}')"
+    DOCKER_ENV_STRING="-e LOADBALANCER_ADDR=\$(cat LOADBALANCER_ADDR | grep -v '^#' | grep -v '^\$' | grep -v '^\ *\$' | awk '{print \$1}')"
 
     KEY_DECRYPT_PASS="$(dialog --stdout --inputbox "Key decrypt password:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING_DECRYPT="-e KEY_DECRYPT_PASS=$KEY_DECRYPT_PASS"
