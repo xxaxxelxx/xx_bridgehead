@@ -15,6 +15,7 @@ if [ $? -eq 0 ]; then
     echo "File $SRCFILE exists. File copied to $TARFILE."
 fi
 
+pkill loadbaldog.sh
 ./loadbaldog.sh &
 
 exit
