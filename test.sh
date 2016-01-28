@@ -258,12 +258,12 @@ elif [ $MODE = "PLAYER" ]; then
     LOADBALANCER_ADDR="$(dialog --stdout --inputbox "Loadbalancer address please:" $HEIGHT $WIDTH)"
     echo $LOADBALANCER_ADDR > LOADBALANCER_ADDR
 # OLD PRE AUTOMATIC    DOCKER_ENV_STRING="-e LOADBALANCER_ADDR=$LOADBALANCER_ADDR"
-    DOCKER_ENV_STRING="-e LOADBALANCER_ADDR=\$(cat LOADBALANCER_ADDR | grep -v '^#' | grep -v '^\$' | grep -v '^\ *\$' | awk '{print \$1}')"
+    DOCKER_ENV_STRING_LB="-e LOADBALANCER_ADDR=\$(cat LOADBALANCER_ADDR | grep -v '^#' | grep -v '^\$' | grep -v '^\ *\$' | awk '{print \$1}')"
 
     KEY_DECRYPT_PASS="$(dialog --stdout --inputbox "Key decrypt password:" $HEIGHT $WIDTH)"
     DOCKER_ENV_STRING_DECRYPT="-e KEY_DECRYPT_PASS=$KEY_DECRYPT_PASS"
 
-    DOCKER_NAME="sshsatellite" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -v /tmp:/tmp --volumes-from icecast_player $DOCKER_ENV_STRING $DOCKER_ENV_STRING_DECRYPT -e LOOP_SEC=10 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_sshsatellite"
+    DOCKER_NAME="sshsatellite" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -v /tmp:/tmp --volumes-from icecast_player $DOCKER_ENV_STRING_LB $DOCKER_ENV_STRING_DECRYPT -e LOOP_SEC=10 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_sshsatellite"
 $DOCKER_CMD;
 rm -f "$RUNDIR/${DOCKER_NAME}."*
 echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
@@ -274,13 +274,13 @@ echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
     echo "$LOADBALANCER_ADDR" > /tmp/loadbalancer.addr
 
     UPDATE_ADMIN_PASS="$(dialog --stdout --inputbox "Update admin password please:" $HEIGHT $WIDTH)"
-    DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e UPDATE_ADMIN_PASS=$UPDATE_ADMIN_PASS"
+    DOCKER_ENV_STRING="-e UPDATE_ADMIN_PASS=$UPDATE_ADMIN_PASS"
     BW_LIMIT="$(dialog --stdout --inputbox "Bandwidth limit in kbitps please:" $HEIGHT $WIDTH 0)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e BW_LIMIT=$BW_LIMIT"
     LOAD_LIMIT="$(dialog --stdout --inputbox "CPU load limit in percent please:" $HEIGHT $WIDTH 90)"
     DOCKER_ENV_STRING="$DOCKER_ENV_STRING -e LOAD_LIMIT=$LOAD_LIMIT"
 
-    DOCKER_NAME="pulse" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -v /tmp:/host/tmp -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro $DOCKER_ENV_STRING -e LOOP_SEC=5 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_pulse"
+    DOCKER_NAME="pulse" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -v /tmp:/host/tmp -v /proc/net/dev:/host/proc/net/dev:ro -v /proc/stat:/host/proc/stat:ro $DOCKER_ENV_STRING $DOCKER_ENV_STRING_LB -e LOOP_SEC=5 --link icecast_player:icplayer --restart=always xxaxxelxx/xx_pulse"
 $DOCKER_CMD
 rm -f "$RUNDIR/${DOCKER_NAME}."*
 echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
