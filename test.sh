@@ -50,7 +50,7 @@ function channelselect() {
 	    for LIQITEM in $PRESEL; do
 		DOCKER_NAME="liquidsoap_$LIQITEM"
 		DOCKER_CMD="docker run -d --name $DOCKER_NAME --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $LIQITEM"
-	    	$DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" > $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S) 
+#X	    	$DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" > $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S) 
 #		echo "docker run -d --name liquidsoap_$LIQITEM --link icecast_player:icplayer --restart=always xxaxxelxx/xx_liquidsoap $LIQITEM"
 	    done
 }
