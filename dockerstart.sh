@@ -218,7 +218,7 @@ elif [ $MODE = "PLAYER" ]; then
 
     dialog --yesno "docker run -d --name icecast_player -p 8000:$IC_PORT $DOCKER_ENV_STRING --restart=always xxaxxelxx/xx_icecast player"  $HEIGHT $WIDTH
     if [ $? -eq 0 ]; then
-	DOCKER_NAME="icecast_player" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -p 8000:$IC_PORT $DOCKER_ENV_STRING -v /usr/share/icecast2/web -v /var/log/icecast2/ --restart=always xxaxxelxx/xx_icecast player"
+	DOCKER_NAME="icecast_player" && DOCKER_CMD="docker run -d --name $DOCKER_NAME -p 8000:$IC_PORT $DOCKER_ENV_STRING -v /usr/share/icecast2/web -v /var/log/icecast2:/var/log/icecast2 --restart=always xxaxxelxx/xx_icecast player"
 	$DOCKER_CMD && rm -f "$RUNDIR/${DOCKER_NAME}."* && echo "$DOCKER_CMD" >> $RUNDIR/$DOCKER_NAME.$(date +%Y-%m-%d_%H%M%S)
     else
 	echo "Do it again."

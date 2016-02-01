@@ -29,6 +29,7 @@ while true; do
 		echo "R E B O O T" >> $LOGFILE
 		date >> $LOGFILE
 		echo "X X X X X X" >> $LOGFILE
+		docker stop icecast_player
 		reboot
 		exit
 	    fi

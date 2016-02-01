@@ -18,4 +18,6 @@ fi
 pkill loadbaldog.sh
 ./loadbaldog.sh &
 
+test -d /var/log/icecast2 || mkdir -p /var/log/icecast2 
+
 exit
