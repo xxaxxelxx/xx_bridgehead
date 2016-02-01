@@ -72,7 +72,8 @@ function f_player() {
     if [ $? -eq 0 ]; then
 	cp -f rc.local.player /etc/rc.local
     fi
-    test -d /var/log/icecast2 || mkdir -p /var/log/icecast2 
+    test -d /var/log/icecast2 || mkdir -p /var/log/icecast2
+    test -d /var/log/icecast2 && chmod -R 777 /var/log/icecast2
 }
 
 function f_loadbalancer() {

@@ -19,5 +19,6 @@ pkill loadbaldog.sh
 ./loadbaldog.sh &
 
 test -d /var/log/icecast2 || mkdir -p /var/log/icecast2 
+test -d /var/log/icecast2 && chmod -R 777 /var/log/icecast2
 
 exit
