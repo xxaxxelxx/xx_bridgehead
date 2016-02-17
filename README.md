@@ -28,8 +28,29 @@ It presumably will not fit for you, but it is possible to tune it. If you need s
 This repo is an essential part of a complex compound used for streaming.
 
 ### Usage
+#### FIRST STEP TO DEPLOY ####
+```bash 
+$ apt-get update; apt-get -yy dist-upgrade; apt-get install -yy git; git clone https://git@github.com/xxaxxelxx/xx_bridgehead.git; cd xx_bridgehead
+```
 
+#### SECOND STEP TO SETUP ####
+```bash
+$ cd xx_bridgehead && ./setup.sh proxy|player|loadbalancer HOSTER-IP-IP-IP-IP
+```
 
+#### LITTLE HELPERS | EXPLORE THE SCRIPTS ####
+docker.restart.sh
+dockercleanup.sh
+dockercleanup_incl_volumes.sh
+dockerimageclean.sh
+dockerpull.sh
+dockerstart.sh
+dockerstop.sh
+dog_pulse_kill
+dog_pulse_start
+dog_reflect_kill
+dog_reflect_start
+setup.sh
 
 ## License
 
