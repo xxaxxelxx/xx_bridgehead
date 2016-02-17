@@ -39,18 +39,18 @@ $ cd xx_bridgehead && ./setup.sh proxy|player|loadbalancer HOSTER-IP-IP-IP-IP
 ```
 
 #### LITTLE HELPERS | EXPLORE THE SCRIPTS ####
-docker.restart.sh
-dockercleanup.sh
-dockercleanup_incl_volumes.sh
-dockerimageclean.sh
-dockerpull.sh
-dockerstart.sh
-dockerstop.sh
-dog_pulse_kill
-dog_pulse_start
-dog_reflect_kill
-dog_reflect_start
-setup.sh
+* docker.restart.sh
+* dockercleanup.sh
+* dockercleanup_incl_volumes.sh
+* dockerimageclean.sh
+* dockerpull.sh
+* dockerstart.sh
+* dockerstop.sh
+* dog_pulse_kill
+* dog_pulse_start
+* dog_reflect_kill
+* dog_reflect_start
+* setup.sh
 
 ## License
 
